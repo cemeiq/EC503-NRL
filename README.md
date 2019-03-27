@@ -10,3 +10,4 @@ Review of Network Representation Learning for BU EC 503.
 * [RAND-WALK: A Latent Variable Model Approach to Word Embeddings](https://arxiv.org/abs/1502.03520)
 * [struc2vec: Learning Node Representations from Structural Identity](https://arxiv.org/abs/1704.03165)
 * [LASAGNE: Locality And Structure Aware Graph Node Embedding](https://arxiv.org/abs/1710.06520)
+* [A Comprehensive Survey on Graph Neural Networks](https://arxiv.org/pdf/1901.00596.pdf)
