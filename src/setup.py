@@ -45,6 +45,8 @@ GRAPHS = dict([
     })
 ])
 
+ALGORITHMS = ["deepwalk", "node2vec", "struc2vec", "LINE", "HARP", "LLE", "IsoMap", "MDS", "SpectralEmbedding", "LTSA", "tSNE"]
+
 FILEPATH = os.path.realpath(__file__)
 SRC_DIR = os.path.dirname(FILEPATH)
 ROOT_DIR = os.path.dirname(SRC_DIR)
@@ -94,6 +96,37 @@ def clean(target, verbose=False, **kwargs):
     G = nx.read_edgelist(edgelist_filename)
     G = max(nx.connected_component_subgraphs(G), key=len)
     nx.write_edgelist(G, edgelist_filename)
+
+
+def run(algorithm, dataset, **kwargs):
+    """Runs the specified algorithm on some dataset"""
+    if algorithm == "all":
+        for algorithm in ALGORITHMS:
+            run(algorithm, dataset, **kwargs)
+        return
+    elif algorithm == "deepwalk":
+        raise NotImplementedError
+    elif algorithm == "node2vec":
+        raise NotImplementedError
+    elif algorithm == "struc2vec":
+        raise NotImplementedError
+    elif algorithm == "LINE":
+        raise NotImplementedError
+    elif algorithm == "HARP":
+        raise NotImplementedError
+    elif algorithm == "LLE":
+        raise NotImplementedError
+    elif algorithm == "IsoMap":
+        raise NotImplementedError
+    elif algorithm == "MDS":
+        raise NotImplementedError
+    elif algorithm == "SpectralEmbedding":
+        raise NotImplementedError
+    elif algorithm == "LTSA":
+        raise NotImplementedError
+    elif algorithm == "tSNE":
+        raise NotImplementedError
+
 
 
 def parse_args():
