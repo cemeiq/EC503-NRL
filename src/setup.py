@@ -93,9 +93,15 @@ def clean(target, verbose=False, **kwargs):
     print("Cleaning dataset {}...".format(target))
     target_dir = os.path.join(ROOT_DIR, "graphs", target)
     edgelist_filename = os.path.join(target_dir, os.path.splitext(os.path.basename(GRAPHS[target]["links"]))[0])
+    basename, ext = os.path.splitext(edgelist_filename)
+    weighted_edgelist_filename = "{}_weighted{}".format(basename, ext)
     G = nx.read_edgelist(edgelist_filename)
     G = max(nx.connected_component_subgraphs(G), key=len)
+    for _, _, d in G.edges(data=True):
+        if "weight" not in d:
+            d["weight"] = 1
     nx.write_edgelist(G, edgelist_filename)
+    nx.write_weighted_edgelist(G, weighted_edgelist_filename)
 
 
 def run(algorithm, dataset, **kwargs):
