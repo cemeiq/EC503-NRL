@@ -7,9 +7,10 @@ Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarit
   \item Let $D^{(2)}$ be the point-wise square of the distance matrix,
   \item Let $J = I - {1\over n}\vec{1}\vec{1}^T,
   \item Let B = -{1 \over 2}JD^{(2)}J,
-  \item 
+  \item Find the top $m$ eigenvalues of $B$ $\lambda_1, ... \lambda_m$, and the corresponding eigenvalues $e_1, ... , e_m$,
+  \item Let $X = E_m\Lambda^{1/2}$.
 \end{enumerate}
-
+(note to  self:doesn't work if distance not euclidean)
 
 
 Classical Multidimensional Scaling minimizes a loss function called \emph{strain}:

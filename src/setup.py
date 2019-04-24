@@ -122,8 +122,6 @@ def run(algorithm, dataset, **kwargs):
         raise NotImplementedError
     elif algorithm == "LLE":
         raise NotImplementedError
-    elif algorithm == "IsoMap":
-        raise NotImplementedError
     elif algorithm == "MDS":
         raise NotImplementedError
     elif algorithm == "SpectralEmbedding":
@@ -161,4 +159,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
