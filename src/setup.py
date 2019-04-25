@@ -132,17 +132,19 @@ def run(algorithm, dataset, **kwargs):
             run(algorith, dataset, **kwargs)
     if dataset not in GRAPHS:
         raise ValueError("Unknown dataset: {}".format(dataset))
-    infile = os.path.join(GRAPH_DIR, target, GRAPHS[dataset]["edgelist"])
-    outfile = os.path.join(EMBEDDING_DIR, target, "{}_{}.embeddings".format(algorithm, dataset))
+    infile = os.path.join(GRAPH_DIR, dataset, GRAPHS[dataset]["edgelist"])
+    outfile = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.embeddings".format(algorithm, dataset))
     utils.mkdir_p(os.path.basename(outfile))
 
     if algorithm == "deepwalk":
         p = subprocess.run(['python3', 'deepwalk.py', dataset])
         print(p)
+    if algorithm == "deepwalk":
+        print(subprocess.run(['python3', 'deepwalk.py', dataset]))
     elif algorithm == "node2vec":
-        raise NotImplementedError
+        print(subprocess.run(['python3', 'node2vec.py', dataset]))
     elif algorithm == "struc2vec":
-        raise NotImplementedError
+        print(subprocess.run(['python3', 'struc2vec.py', dataset]))
     elif algorithm == "LINE":
         name, ext = os.path.splitext(infile)
         infile = "{}_weighted{}".format(name, ext)
