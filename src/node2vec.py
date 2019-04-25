@@ -33,7 +33,7 @@ def execute(dataset, output='.'):
     command = 'python ' + os.path.join('src', 'main.py') + ' ' \
               '--input ' + os.path.join(path, graphs[dataset]) + ' ' \
               '--output ' + os.path.join(output, 'node2vec_' + dataset + '.embeddings') + ' ' \
-              '--num-walks 80 ' \
+              '--num-walks 10 ' \
               '--walk-length 40'
     run = subprocess.run(command, shell=True)
     print(run)

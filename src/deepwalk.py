@@ -38,7 +38,7 @@ def execute(dataset, output='.'):
     command = 'deepwalk --format edgelist ' \
               '--input ' + os.path.join(path, graphs[dataset]) + ' ' \
               '--max-memory-data-size 0 ' \
-              '--number-walks 80 ' \
+              '--number-walks 10 ' \
               '--representation-size 128 ' \
               '--walk-length 40 ' \
               '--workers 1 ' \
