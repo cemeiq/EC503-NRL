@@ -7,6 +7,7 @@ warnings.filterwarnings("ignore")
 
 import os
 import argparse
+import subprocess
 from git import Repo
 import networkx as nx
 
@@ -111,7 +112,8 @@ def run(algorithm, dataset, **kwargs):
             run(algorithm, dataset, **kwargs)
         return
     elif algorithm == "deepwalk":
-        raise NotImplementedError
+        p = subprocess.run(['python3', 'deepwalk.py', dataset])
+        print(p)
     elif algorithm == "node2vec":
         raise NotImplementedError
     elif algorithm == "struc2vec":
@@ -147,6 +149,12 @@ def parse_args():
     parser_clean = subparsers.add_parser("clean", help="Cleans up the data")
     parser_clean.set_defaults(func=clean)
     parser_clean.add_argument("target", choices=["all"] + list(GRAPHS.keys()), default="all", help="Which dataset to clean")
+
+    # run algorithms
+    parser_run = subparsers.add_parser("run", help="Run Graph Learning Algorithms")
+    parser_run.set_defaults(func=run)
+    parser_run.add_argument("algorithm", choices=["all"] + list(GIT_REPOS.keys()), default="all", help="Which algorithm to run")
+    parser_run.add_argument("dataset", choices=list(GRAPHS.keys()), default="all", help="Which algorithm to run")
 
     args = parser.parse_args()
     return args
