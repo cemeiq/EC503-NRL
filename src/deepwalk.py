@@ -42,7 +42,7 @@ def execute(dataset, output='.'):
               '--representation-size 128 ' \
               '--walk-length 40 ' \
               '--workers 1 ' \
-              '--output ' + os.path.join(output, 'deepwalk_facebook.embeddings')
+              '--output ' + os.path.join(output, 'deepwalk_' + dataset + '.embeddings')
     run = subprocess.run(command, shell=True)
     print(run)
 
