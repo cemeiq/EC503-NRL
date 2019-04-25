@@ -30,7 +30,7 @@ GIT_REPOS = dict([
 GRAPHS = dict([
     ("email-EU-core", {
         "links": "https://snap.stanford.edu/data/email-Eu-core.txt.gz",
-        "labels": "https://snap.stanford.edu/data/email-Eu-core-department-labels.txt.gza",
+        "labels": "https://snap.stanford.edu/data/email-Eu-core-department-labels.txt.gz",
         "edgelist": "email-Eu-core-department-labels.txt",
     }),
     ("com-Youtube", {
@@ -134,9 +134,9 @@ def run(algorithm, dataset, **kwargs):
         raise ValueError("Unknown dataset: {}".format(dataset))
     infile = os.path.join(GRAPH_DIR, target, GRAPHS[dataset]["edgelist"])
     outfile = os.path.join(EMBEDDING_DIR, target, "{}_{}.embeddings".format(algorithm, dataset))
-    mkdir_p(os.path.basename(outfile))
+    utils.mkdir_p(os.path.basename(outfile))
 
-    elif algorithm == "deepwalk":
+    if algorithm == "deepwalk":
         p = subprocess.run(['python3', 'deepwalk.py', dataset])
         print(p)
     elif algorithm == "node2vec":
@@ -179,21 +179,21 @@ def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinea
     results = {}
     for dataset in datasets:
         for algorithm in algorithms:
-        clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver)
-        embedding_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.embeddings".format(algorithm, dataset))
-        prediction_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.predictions".format(algorithm, dataset))
-        X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
-        X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
-        y = read_labels(label_filename)
-        X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, y, X.index)
-        y_pred = clf.fit(X_train, y_train).predict(X_test)
-        results[(dataset, algorithm)] = ([precision_score(y_test, y_pred, average="micro"),
-                    recall_score(y_test, y_pred, average="micro"),
-                    f1_score(y_test, y_pred, average="micro"),
-                    precision_score(y_test, y_pred, average="macro"),
-                    recall_score(y_test, y_pred, average="macro"),
-                    f1_score(y_test, y_pred, average="macro"),
-                    f1_score(y_test, y_pred, average="weighted")])
+            clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver)
+            embedding_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.embeddings".format(algorithm, dataset))
+            prediction_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.predictions".format(algorithm, dataset))
+            X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
+            X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
+            y = read_labels(label_filename)
+            X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, y, X.index)
+            y_pred = clf.fit(X_train, y_train).predict(X_test)
+            results[(dataset, algorithm)] = ([precision_score(y_test, y_pred, average="micro"),
+                        recall_score(y_test, y_pred, average="micro"),
+                        f1_score(y_test, y_pred, average="micro"),
+                        precision_score(y_test, y_pred, average="macro"),
+                        recall_score(y_test, y_pred, average="macro"),
+                        f1_score(y_test, y_pred, average="macro"),
+                        f1_score(y_test, y_pred, average="weighted")])
     results = pd.DataFrame(results, index=["Precision (micro)", "Recall (micro)", "F1 (micro)",
                                           "Precision (macro)", "Recall (macro)", "F1 (macro)",
                                           "F1-weighted"]).T
@@ -228,7 +228,7 @@ def parse_args():
     parser_classify.set_defaults(func="classify")
     parser_classify.add_argument("algorithm", choices=["all"] + ALGORITHMS, default="all", help="Which algorithm's embeddings to use")
     parser_classify.add_argument("dataset", choices=["all"] + list(GRAPHS.keys()), default="all", help="Whose dataset's embedding to use as input")
-    parser_classify.add_argument("--penalty", choice=["l1", "l2"], default="l2",
+    parser_classify.add_argument("--penalty", choices=["l1", "l2"], default="l2",
             help="Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.")
     parser_classify.add_argument("--tol", type=float, default=1e-4, help="Tolerance for stopping criteria.")
     parser_classify.add_argument("-C", type=float, default=1.0,
