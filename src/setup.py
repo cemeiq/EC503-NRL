@@ -7,6 +7,7 @@ warnings.filterwarnings("ignore")
 
 import os
 import argparse
+import subprocess
 from git import Repo
 import networkx as nx
 
@@ -136,7 +137,8 @@ def run(algorithm, dataset, **kwargs):
     mkdir_p(os.path.basename(outfile))
 
     elif algorithm == "deepwalk":
-        raise NotImplementedError
+        p = subprocess.run(['python3', 'deepwalk.py', dataset])
+        print(p)
     elif algorithm == "node2vec":
         raise NotImplementedError
     elif algorithm == "struc2vec":
@@ -148,8 +150,6 @@ def run(algorithm, dataset, **kwargs):
     elif algorithm == "HARP":
         raise NotImplementedError
     elif algorithm == "LLE":
-        raise NotImplementedError
-    elif algorithm == "IsoMap":
         raise NotImplementedError
     elif algorithm == "MDS":
         raise NotImplementedError
@@ -246,4 +246,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
