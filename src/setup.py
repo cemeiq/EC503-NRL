@@ -23,25 +23,31 @@ GIT_REPOS = dict([
 GRAPHS = dict([
     ("email-EU-core", {
         "links": "https://snap.stanford.edu/data/email-Eu-core.txt.gz",
-        "labels": "https://snap.stanford.edu/data/email-Eu-core-department-labels.txt.gz"
+        "labels": "https://snap.stanford.edu/data/email-Eu-core-department-labels.txt.gza",
+        "edgelist": "email-Eu-core-department-labels.txt",
     }),
     ("com-Youtube", {
         "links": "https://snap.stanford.edu/data/bigdata/communities/com-youtube.ungraph.txt.gz",
-        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-youtube.all.cmty.txt.gz"
+        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-youtube.all.cmty.txt.gz",
+        "edgelist": "com-youtube.ungraph.txt",
     }),
     ("ca-AstroPh", {
-        "links": "https://snap.stanford.edu/data/ca-AstroPh.txt.gz"
+        "links": "https://snap.stanford.edu/data/ca-AstroPh.txt.gz",
+        "edgelist": "ca-AstroPh.txt",
     }),
     ("facebook", {
-        "links": "https://snap.stanford.edu/data/facebook_combined.txt.gz"
+        "links": "https://snap.stanford.edu/data/facebook_combined.txt.gz",
+        "edgelist": "facebook_combined.txt"
     }),
     ("dblp", {
         "links": "https://snap.stanford.edu/data/bigdata/communities/com-dblp.ungraph.txt.gz",
-        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-dblp.all.cmty.txt.gz"
+        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-dblp.all.cmty.txt.gz",
+        "edgelist": "com-dblp.ungraph.txt",
     }),
     ("com-amazon", {
         "links": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.ungraph.txt.gz",
-        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.all.cmty.txt.gz"
+        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.all.cmty.txt.gz",
+        "edgelist": "com-amazon.ungraph.txt",
     })
 ])
 
@@ -50,6 +56,8 @@ ALGORITHMS = ["deepwalk", "node2vec", "struc2vec", "LINE", "HARP", "LLE", "IsoMa
 FILEPATH = os.path.realpath(__file__)
 SRC_DIR = os.path.dirname(FILEPATH)
 ROOT_DIR = os.path.dirname(SRC_DIR)
+GRAPH_DIR = os.path.join(ROOT_DIR, "graphs")
+EMBEDDING_DIR = os.path.join(ROOT_DIR, "embeddings")
 
 
 def download(target="all", verbose=False, **kwargs):
@@ -74,8 +82,10 @@ def download(target="all", verbose=False, **kwargs):
             download(graph, verbose=True)
     elif target in GRAPHS.keys():
         for url in GRAPHS[target].values():
-            download_path = os.path.join(ROOT_DIR, "graphs", target, os.path.basename(url))
-            unzip_path = os.path.join(ROOT_DIR, "graphs", target, os.path.splitext(os.path.basename(url))[0])
+            if not url.startswith("http"):
+                continue
+            download_path = os.path.join(GRAPH_DIR, target, os.path.basename(url))
+            unzip_path = os.path.join(GRAPH_DIR, target, os.path.splitext(os.path.basename(url))[0])
             utils.download(url, download_path)
             utils.unzip(download_path, unzip_path)
     else:
@@ -91,8 +101,8 @@ def clean(target, verbose=False, **kwargs):
     if target not in GRAPHS.keys():
         raise ValueError("Unknown target.")
     print("Cleaning dataset {}...".format(target))
-    target_dir = os.path.join(ROOT_DIR, "graphs", target)
-    edgelist_filename = os.path.join(target_dir, os.path.splitext(os.path.basename(GRAPHS[target]["links"]))[0])
+    target_dir = os.path.join(GRAPH_DIR, target)
+    edgelist_filename = os.path.join(target_dir, GRAPHS[target]["edgelist"])
     basename, ext = os.path.splitext(edgelist_filename)
     weighted_edgelist_filename = "{}_weighted{}".format(basename, ext)
     G = nx.read_edgelist(edgelist_filename)
@@ -110,6 +120,15 @@ def run(algorithm, dataset, **kwargs):
         for algorithm in ALGORITHMS:
             run(algorithm, dataset, **kwargs)
         return
+    if dataset == "all":
+        for dataset in GRAPHS:
+            run(algorith, dataset, **kwargs)
+    if dataset not in GRAPHS:
+        raise ValueError("Unknown dataset: {}".format(dataset))
+    infile = os.path.join(GRAPH_DIR, target, GRAPHS[dataset]["edgelist"])
+    outfile = os.path.join(EMBEDDING_DIR, target, "{}_{}.embeddings".format(algorithm, dataset))
+    mkdir_p(os.path.basename(outfile))
+
     elif algorithm == "deepwalk":
         raise NotImplementedError
     elif algorithm == "node2vec":
@@ -117,6 +136,8 @@ def run(algorithm, dataset, **kwargs):
     elif algorithm == "struc2vec":
         raise NotImplementedError
     elif algorithm == "LINE":
+        name, ext = os.path.splitext(infile)
+        infile = "{}_weighted{}".format(name, ext)
         raise NotImplementedError
     elif algorithm == "HARP":
         raise NotImplementedError
@@ -141,14 +162,32 @@ def parse_args():
     subparsers = parser.add_subparsers(help="Available commands")
 
     # download parser
-    parser_download = subparsers.add_parser("download", help="Downloads target")
+    parser_download = subparsers.add_parser("download", help="Download target")
     parser_download.set_defaults(func=download)
     parser_download.add_argument("target", choices=["all", "code", "data"] + list(GIT_REPOS.keys()) + list(GRAPHS.keys()), default="all", help="What to download")
 
     # clean parser
-    parser_clean = subparsers.add_parser("clean", help="Cleans up the data")
+    parser_clean = subparsers.add_parser("clean", help="Clean up the data by keeping only the largest connected component")
     parser_clean.set_defaults(func=clean)
     parser_clean.add_argument("target", choices=["all"] + list(GRAPHS.keys()), default="all", help="Which dataset to clean")
+
+    # run parser
+    parser_run = subparsers.add_parser("run", help="Run the algorithm(s) on the target dataset(s)")
+    parser_run.set_defaults(func=run)
+    parser_run.add_argument("algorithm", choices=["all"] + ALGORITHMS, default="all", help="Which algorithm to run")
+    parser_run.add_argument("dataset", choices=["all"] + list(GRAPHS.keys()), default="all", help="On which datasets to run the algorithm")
+
+    # classify parser
+    parser_classify = subparsers.add_parser("classify", help="Run Logistic Regression on some ebedding")
+    parser_classify.set_defaults(func="classify")
+    parser_classify.add_argument("algorithm", choices=["all"] + ALGORITHMS, default="all", help="Which algorithm's embeddings to use")
+    parser_classify.add_argument("dataset", choices=["all"] + list(GRAPHS.keys()), default="all", help="Whose dataset's embedding to use as input")
+    parser_classify.add_argument("--penalty", choice=["l1", "l2"], default="l2",
+            help="Used to specify the norm used in the penalization. The ‘newton-cg’, ‘sag’ and ‘lbfgs’ solvers support only l2 penalties.")
+    parser_classify.add_argument("--tol", type=float, default=1e-4, help="Tolerance for stopping criteria.")
+    parser_classify.add_argument("-C", type=float, default=1.0,
+            help="Inverse of regularization strength; must be a positive float. Like in support vector machines, smaller values specify stronger regularization.")
+    parser_classify.add_argument("--solver", choices=["newton-cg", "lbfgs", "liblinear", "sag", "saga"], default="liblinear", help="Algorithm to use in the optimization problem.")
 
     args = parser.parse_args()
     return args
