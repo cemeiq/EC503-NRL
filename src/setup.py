@@ -10,6 +10,12 @@ import argparse
 from git import Repo
 import networkx as nx
 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score, classification_report, confusion_matrix, precision_score, recall_score
+
+from IPython.display import display, HTML
+
 import utils
 
 GIT_REPOS = dict([
@@ -154,6 +160,46 @@ def run(algorithm, dataset, **kwargs):
     elif algorithm == "tSNE":
         raise NotImplementedError
 
+
+def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinear", **kwargs):
+    """Runs classification on the embedding produced by the specified algorithm on some dataset"""
+    if algorithm == "all":
+        algorithms = list(ALGORITHMS.keys())
+    elif algorithm in ALGORITHMS:
+        algorithms = [algorithm]
+    else:
+        raise ValueError("Unknown algorithm: {}.".format(algorithm))
+
+    if dataset == "all":
+        datasets = list(GRAPHS.keys())
+    elif dataset in GRAPHS:
+        datasets = [dataset]
+    else:
+        raise ValueError("Unknown dataset: {}.".format(dataset))
+    results = {}
+    for dataset in datasets:
+        for algorithm in algorithms:
+        clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver)
+        embedding_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.embeddings".format(algorithm, dataset))
+        prediction_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.predictions".format(algorithm, dataset))
+        X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
+        X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
+        y = read_labels(label_filename)
+        X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, y, X.index)
+        y_pred = clf.fit(X_train, y_train).predict(X_test)
+        results[(dataset, algorithm)] = ([precision_score(y_test, y_pred, average="micro"),
+                    recall_score(y_test, y_pred, average="micro"),
+                    f1_score(y_test, y_pred, average="micro"),
+                    precision_score(y_test, y_pred, average="macro"),
+                    recall_score(y_test, y_pred, average="macro"),
+                    f1_score(y_test, y_pred, average="macro"),
+                    f1_score(y_test, y_pred, average="weighted")])
+    results = pd.DataFrame(results, index=["Precision (micro)", "Recall (micro)", "F1 (micro)",
+                                          "Precision (macro)", "Recall (macro)", "F1 (macro)",
+                                          "F1-weighted"]).T
+    results_file = os.path.join(ROOT_DIR, "results.html")
+    with open(results_file, "w") as f:
+        f.write(display_html(results.style.apply(highlight_max)._repr_html_(), raw=True))
 
 
 def parse_args():
