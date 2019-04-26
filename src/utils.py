@@ -82,3 +82,11 @@ def unzip(filename, folder=None):
 
     else:
         raise ValueError("Was expecting a .zip or .gz file. Instead got {}".format(filename))
+
+
+def highlight_max(s):
+    '''
+    highlight the maximum in a Series yellow.
+    '''
+    is_max = s == s.max()
+    return ['background-color: yellow' if v else '' for v in is_max]

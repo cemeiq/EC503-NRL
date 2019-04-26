@@ -10,4 +10,7 @@ Review of Network Representation Learning for BU EC 503.
 * [RAND-WALK: A Latent Variable Model Approach to Word Embeddings](https://arxiv.org/abs/1502.03520)
 * [struc2vec: Learning Node Representations from Structural Identity](https://arxiv.org/abs/1704.03165)
 * [LASAGNE: Locality And Structure Aware Graph Node Embedding](https://arxiv.org/abs/1710.06520)
-* [A Comprehensive Survey on Graph Neural Networks](https://arxiv.org/pdf/1901.00596.pdf)
+* [Convolutional neural networks on graphs with fast localized spectral filtering](http://papers.nips.cc/paper/6081-convolutional-neural-networks-on-graphs-with-fast-localized-spectral-filtering.pdf)
+* [Semi-supervised classification with graph convolutional networks](https://arxiv.org/pdf/1609.02907.pdf)
+* [Inductive representation learning on large graphs](https://papers.nips.cc/paper/6703-inductive-representation-learning-on-large-graphs.pdf)
+* [Large-Scale Learnable Graph Convolutional Networks](https://arxiv.org/abs/1710.06520) I MAY CHANGE IT!
