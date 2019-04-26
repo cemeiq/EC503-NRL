@@ -5,8 +5,8 @@ Multidimensional Scaling (MDS) is a method for creating a Euclidean embedding of
 Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarity matrix. Then:
 \begin{enumerate}
   \item Let $D^{(2)}$ be the point-wise square of the distance matrix,
-  \item Let $J = I - {1\over n}\vec{1}\vec{1}^T,
-  \item Let B = -{1 \over 2}JD^{(2)}J,
+  \item Let $J = I - {1\over n}\vec{1}\vec{1}^T$,
+  \item Let $B = -{1 \over 2}JD^{(2)}J$,
   \item Find the top $m$ eigenvalues of $B$ $\lambda_1, ... \lambda_m$, and the corresponding eigenvalues $e_1, ... , e_m$,
   \item Let $X = E_m\Lambda^{1/2}$.
 \end{enumerate}
@@ -15,9 +15,21 @@ Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarit
 
 Classical Multidimensional Scaling minimizes a loss function called \emph{strain}:
 \[
-    Strain_D(x_1, ... , x_N) = \left( ({\sum_{i,j}b_{i,j}- \langle x_i,x_j \rangle})^2 \over \sum_{i,j}b_{i,j}^2\right)
+    Strain_D(x_1, ... , x_N) = \left( ({\sum_{i,j}b_{i,j}- \langle x_i,x_j \rangle})^2 \over \sum_{i,j}b_{i,j}^2\right).
 \]
 
+\subsubsection*{Spectral Embedding}
+Another way to embed a graph in Euclidean space is given by the spectral embedding. This method computes the $k$ eigenvectors of the normalized Laplacian matrix $\mathcal{L}$  corresponding to the $k$ smallest eigenvalues, and uses each of them as an embedding of the  vertices into $\mathbb{R}$, resulting in an  embedding into $\mathbb{R}^k$. The normalized Laplacian matrix is given by:
+\[
+    \mathcal{L} = D^{-{1\over 2}}(D - A)D^{-{1\over 2}}
+\]
+
+One can prove that the quadratic form of the Laplacian is a relaxation to the minimum conductance cut problem defined as follows:
+
+\[
+    \underset{S  \subseteq V }{\text{minimize}} {|E(S,\overline{S})|\over \min\{vol(S), vol(\overline{S})\}}.
+\]
+The eigenvectors of the Laplacian therefore act as optimizers of the relaxation, and tend to align points in space so as to keep connected points close to each other.
 
 \subsubsection*{Isomap}
-Isomap is a method for manifold learning / non-linear dimensionality reduction. In a general setting, given data points living in a (non-linear) manifold in \mathbb{R}^n we would like to embed them into lower dimensional space while preserving geodesic distances.
+Isomap is a method for manifold learning / non-linear dimensionality reduction. In a general setting, given data points living in a (non-linear) manifold in $\mathbb{R}^n$ we would like to embed them into lower dimensional space while preserving geodesic distances.
