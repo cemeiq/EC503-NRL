@@ -19,6 +19,11 @@ as it is not easy to define a constant-sized neighborhood and apply a
 localized filter, as in the traditional CNN case. Also, the pooling stage has to
 be defined as well.
 \spara{First efforts} First efforts to address the above mentioned issues
-\cite{Lecun} and introduce the architecture of CNNs to networked data,
+by Bruna et al. \cite{Lecun} and introduce the architecture of CNNs to networked data,
 mainly draw from the field of Graph Signal Processing \cite{shuman}.
-Graphs are generally considered undirected and their representation is given through their Laplacian
+Graphs are generally considered undirected and their representation is given
+through their \textbf{Laplacian $L = D -A$} or more commonly the normalized
+\textbf{Laplacian $L = I_n - D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$}. As this matrix
+is a real symmetric and positive semidefinite, it admits an eigenvector
+decomposition $L=U\Lambda U^T$, where $U$ is the matrix of eigenvectors order by
+their eigenvalue, and $\Lambda$ is the diagonal matrix of eigenvalues.
