@@ -25,6 +25,10 @@ GIT_REPOS = dict([
     ("struc2vec", "https://github.com/leoribeiro/struc2vec.git"),
     ("LINE", "https://github.com/tangjianpku/LINE.git"),
     ("HARP", "https://github.com/GTmac/HARP.git"),
+    ("MDeff", "https://github.com/mdeff/cnn_graph"),
+    ("Kipf", "https://github.com/tkipf/gcn"),
+    ("SAGE", "https://github.com/williamleif/GraphSAGE"),
+    ("LGCN", "https://github.com/williamleif/GraphSAGE")
 ])
 
 GRAPHS = dict([
@@ -58,7 +62,7 @@ GRAPHS = dict([
     })
 ])
 
-ALGORITHMS = ["deepwalk", "node2vec", "struc2vec", "LINE", "HARP", "LLE", "IsoMap", "MDS", "SpectralEmbedding", "LTSA", "tSNE"]
+ALGORITHMS = ["deepwalk", "node2vec", "struc2vec", "LINE", "HARP", "LLE", "IsoMap", "MDS", "SpectralEmbedding", "LTSA", "tSNE", "MDeff", "Kipf", "SAGE", "LGCN"]
 
 FILEPATH = os.path.realpath(__file__)
 SRC_DIR = os.path.dirname(FILEPATH)
@@ -160,6 +164,14 @@ def run(algorithm, dataset, **kwargs):
     elif algorithm == "LTSA":
         raise NotImplementedError
     elif algorithm == "tSNE":
+        raise NotImplementedError
+    elif algorithm == "Mdeff":
+        raise NotImplementedError
+    elif algorithm == "Kipf":
+        raise NotImplementedError
+    elif algorithm == "SAGE":
+        raise NotImplementedError
+    elif algorithm == "LGCN":
         raise NotImplementedError
 
 
