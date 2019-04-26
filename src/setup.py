@@ -9,6 +9,8 @@ import os
 import argparse
 import subprocess
 from git import Repo
+import numpy as np
+import pandas as pd
 import networkx as nx
 
 from sklearn.model_selection import train_test_split
@@ -59,7 +61,11 @@ GRAPHS = dict([
         "links": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.ungraph.txt.gz",
         "labels": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.all.cmty.txt.gz",
         "edgelist": "com-amazon.ungraph.txt",
-    })
+    }),
+    ("PPI", {
+        "links": "http://snap.stanford.edu/graphsage/ppi.zip",
+        "edgelist": "ppi/ppi/ppi-walks.txt",
+    }),
 ])
 
 ALGORITHMS = ["deepwalk", "node2vec", "struc2vec", "LINE", "HARP", "LLE", "IsoMap", "MDS", "SpectralEmbedding", "LTSA", "tSNE", "MDeff", "Kipf", "SAGE", "LGCN"]
@@ -116,13 +122,25 @@ def clean(target, verbose=False, **kwargs):
     edgelist_filename = os.path.join(target_dir, GRAPHS[target]["edgelist"])
     basename, ext = os.path.splitext(edgelist_filename)
     weighted_edgelist_filename = "{}_weighted{}".format(basename, ext)
-    G = nx.read_edgelist(edgelist_filename)
-    G = max(nx.connected_component_subgraphs(G), key=len)
-    for _, _, d in G.edges(data=True):
-        if "weight" not in d:
-            d["weight"] = 1
-    nx.write_edgelist(G, edgelist_filename)
-    nx.write_weighted_edgelist(G, weighted_edgelist_filename)
+    G = nx.read_edgelist(edgelist_filename, nodetype=int)
+    if target == "PPI":
+        M = sorted([a for a in nx.connected_component_subgraphs(G) if len(a) > 100], key=len)
+        f = pd.DataFrame(np.load(os.path.join(target_dir, "ppi/ppi/ppi-feats.npy")))
+        c = pd.read_json(os.path.join(target_dir, "ppi/ppi/ppi-class_map.json")).T
+        for i, a in enumerate(M):
+            nx.write_edgelist(a, os.path.join(target_dir, "ppi_{:02}.edgelist".format(i+1)))
+            nodes = [n for n in a.nodes()]
+            fi = f.loc[nodes, :]
+            ci = c.loc[nodes, :]
+            ci.to_json(os.path.join(target_dir, "ppi_{:02d}.classes".format(i+1)))
+            fi.to_json(os.path.join(target_dir, "ppi_{:02d}.features".format(i+1)))
+    else:
+        G = max(nx.connected_component_subgraphs(G), key=len)
+        for _, _, d in G.edges(data=True):
+            if "weight" not in d:
+                d["weight"] = 1
+        nx.write_edgelist(G, edgelist_filename)
+        nx.write_weighted_edgelist(G, weighted_edgelist_filename)
 
 
 def run(algorithm, dataset, **kwargs):
