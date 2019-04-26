@@ -18,12 +18,22 @@ in real networks \cite{smth} makes the filtering-convolution part difficult,
 as it is not easy to define a constant-sized neighborhood and apply a
 localized filter, as in the traditional CNN case. Also, the pooling stage has to
 be defined as well.
-\spara{First efforts} First efforts to address the above mentioned issues
+\spara{Convolution in graphs} First efforts to address the above mentioned issues
 by Bruna et al. \cite{Lecun} and introduce the architecture of CNNs to networked data,
 mainly draw from the field of Graph Signal Processing \cite{shuman}.
 Graphs are generally considered undirected and their representation is given
 through their \textbf{Laplacian $L = D -A$} or more commonly the normalized
 \textbf{Laplacian $L = I_n - D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$}. As this matrix
 is a real symmetric and positive semidefinite, it admits an eigenvector
-decomposition $L=U\Lambda U^T$, where $U$ is the matrix of eigenvectors order by
-their eigenvalue, and $\Lambda$ is the diagonal matrix of eigenvalues.
+decomposition $L=U\Lambda U^T$, where $U$ is a square orthonormal matrix with
+the eigenvectors as its columns, and $\Lambda$ is the diagonal matrix of eigenvalues.
+Letting $x\in \mathbb{R}^{n}$ be a feature vector of the nodes of a graph,
+the {\em graph fourier transform} is then defined as $\hat{x}=U^T x \in \mathbb{R}^n$
+and its inverse as $x = U\hat{x}$. The \texbf{convolution operator} on a graph
+$\mathcal{G}$ is defined on the Fourier domain, as:
+\begin{equation*}
+x *_{\mathcal{G}} y = U((U^T x)\odot (U^T y))
+\end{equation*}
+where $\odot$ denotes the element-wise Hadamard product.\\
+Thereofre, a signal $x$ is filtered by $g_{\theta}$, as:\\
+\begin{equation}
