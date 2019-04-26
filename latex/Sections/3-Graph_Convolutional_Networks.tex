@@ -29,11 +29,23 @@ decomposition $L=U\Lambda U^T$, where $U$ is a square orthonormal matrix with
 the eigenvectors as its columns, and $\Lambda$ is the diagonal matrix of eigenvalues.
 Letting $x\in \mathbb{R}^{n}$ be a feature vector of the nodes of a graph,
 the {\em graph fourier transform} is then defined as $\hat{x}=U^T x \in \mathbb{R}^n$
-and its inverse as $x = U\hat{x}$. The \texbf{convolution operator} on a graph
+and its inverse as $x = U\hat{x}$. The \textbf{convolution operator} on a graph
 $\mathcal{G}$ is defined on the Fourier domain, as:
 \begin{equation*}
 x *_{\mathcal{G}} y = U((U^T x)\odot (U^T y))
 \end{equation*}
 where $\odot$ denotes the element-wise Hadamard product.\\
-Thereofre, a signal $x$ is filtered by $g_{\theta}$, as:\\
+Therefore, a signal $x$ is filtered by $g_{\theta}$, as:\\
 \begin{equation}
+y = g_{\theta}(L)x = g_{\theta} (U\Lambda U^T)x = U g_{\theta}(\Lambda ) U^T x
+\end{equation}
+where $g_{\theta}(\Lambda) = diag(\theta)$ is a non-parametric filter.\\
+This approach has, however, the following limitations:
+\begin{itemize}
+\item [1.] Filters are not localized
+\item [2.] Their learning complexity scales with the dimensionality of the data $O(n)$
+\item [3.] The computational cost of filtering is high- $O(n^2)$, due to the
+multiplication with the Fourier basis $U$.
+\end{itemize}
+
+\subsubsection*{ChebNet\cite{defferard}}
