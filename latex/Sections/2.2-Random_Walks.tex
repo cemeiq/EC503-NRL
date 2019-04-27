@@ -1,1 +1,31 @@
 \subsection{Random Walks}
+
+\subsubsection*{LINE}
+
+LINE is a network embedding model, able to handle very large, arbitrary types of graph networks $G=(V,E)$, (undirected, directed and/or weighted), by optimizing an objective which preserves both local and global network structures. Local structures are represented by the observed links in the networks, as for each pair of vertices linked by edge $(u, v)$, the weight $w_{uv}$ on that edge indicates the first-order proximity between u and v. Global structure is the second-order proximity between the vertices, determined through the shared neighborhood structures, as nodes with shared neighbors are likely to be similar. If $p_u = (w_{u,1}; \dots ;w_{u,|V|})$ denotes the first-order proximity of u with all the other vertices, then the second-order proximity between u and v is the similarity between $p_u$ and $p_v$. 
+
+In both cases, an objective function is defined and optimized, and the difference in the variants of the model that are described lies on whether first- or second-order proximity (or both) is used, and on the method selected for optimizing this objective in each case. Using first-order proximity, the KL-divergence between the joint and the empirical distribution of vertices $v_i$ and $v_j$ for each undirected edge $(i,j)$ is minimized. On the other hand, using second-order proximity, $u_i'$ is defined as the representation of $v_i$, when it is treated as a specific "context", and $u_i$ as the representation of $v_i$ when it is treated as a vertex. In this case, the KL-divergence between the conditional and the empirical distribution over the contexts is minimized.
+
+A negative sampling approach tackles the problem of trivial infinity solutions in the case of first-order proximity and that of the computationally expensive minimization of the objective in the case of second-order proximity. Multiple negative edges are sampled according to some noisy distribution for each edge $(i,j)$, and an asynchronous Stochastic Gradient Descent algorithm is used, which, in each step, samples a mini-batch of edges and updates the model parameters.
+When edge weights have a high variance, scales of the gradients in SGD diverge, making it harder to find a good learning rate. Optimization via edge-sampling is then applied, by sampling from the original edges, with sampling probabilities proportional to the original edge weights. Sampled edges are treated as binary edges. 
+
+To combine first- and second-order proximity, a simple way is to concatenate the vector representations learned by both into a longer vector, and reweigh the dimensions, to balance the two representations. It was found that in practice, optimization takes $O(|E|)$ time, and the overall complexity of LINE is $O(d(K+1))$, given that K is the number of negative samples and $d<<|V|$ the dimension of the lower-dimensional space.
+
+\subsubsection*{HARP}
+
+HARP is a meta strategy which solves the graph representation learning problem using a hierarchical approach. 
+All methods described before could easily get stuck at a bad local minima as the result of poor initialization of the non-convex optimization. Moreover,these methods mostly aim to preserve local proximities in a graph but neglect its global structure.
+
+HARP recursively coalesces the nodes and edges in the original graph to get a series of successively smaller but structurally similar graphs . These coalesced graphs, each with a different granularity, provide a view of the original graph’s global structure. Starting from the most simplified form, each graph is used to learn a set of initial representations which serve as good initializations for embedding the next, more detailed graph. This process is repeated until we get an embedding for each node in the original graph.
+
+HARP's method for multi-level graph representation learning consists of three parts: 
+\begin{itemize}
+    \item \textbf{Graph Coarsening:} starting from the original graph, $G = G_0$, a hierarchy of successively smaller graphs $G_0, G_1, \dots , G_L$ is created. A hybrid graph coarsening scheme is developed, which is repeatedly applied to obtain a small graph. It combines two algorithms, edge collapsing and star collapsing, preserving first- and second-order proximity respectively. Edge collapsing is an edge selection and node merging algorithm, which arbitrarily merges nodes of edges into single nodes, providing a graph with at least half the edges of the original one. Star collapsing algorithm, on the other hand, considers star-like structured graphs, and merges nodes with the same neighbors into supernodes.
+    \item \textbf{Graph Embedding:}  Using a provided Graph Embedding algorithm, Graph Embedding is obtained on the Coarsest Graph $G_L$, a small sized graph providing a high quality representation. 
+    \item \textbf{Representation Prolongation and Refinement:} For each graph $G_i$, the graph representation of $G_{i+1}$ is prolonged and taken as its initial embedding, $\Phi'_{G_i}$, followed by applying a provided embedding algorithm to $(G_i, \Phi'_{G_i})$ to further refine $\Phi'_{G_i}$ and obtain refined embedding $\Phi_{G_i}$. 
+\end{itemize}
+
+Processes of Graph Embedding, Prolongation and Refinement are then applied recursively to the larger graphs and their embeddings, until we obtain the graph embedding of the original graph, $\Phi'_{G_0}$.
+
+HARP is combined with a few state-of-the-art graph embedding methods (DeepWalk, LINE, Node2vec) to produce higher quality embeddings for all of them.
+Time Complexity of HARP(DW) is the same as that of the original DeepWalk, equal to $O(\gamma |V|tw (d+dlog|V|))$, where $\gamma$ is the number of random walks, t is the  walk length, w is the window size, d is the representation size, and $|V|$ is the number of nodes. Similarly, time complexity of HARP(LINE) is the same as that of LINE, $O(r|E|)$,  linear to the number of edges in the graph, $|E|$, and the number of iterations over edges, r.
