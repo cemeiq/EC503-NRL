@@ -14,7 +14,7 @@ graphs = {
     "ca-AstroPh": "ca-AstroPh.txt"
 }
 
-def execute(dataset, output='.'):
+def execute(dataset, infile, outfile='.'):
     os.chdir("struc2vec")
     print('Current directory is', os.getcwd())
     # create and activate the virtual environment
@@ -29,27 +29,30 @@ def execute(dataset, output='.'):
     pip.main(['install', '--prefix', venv_dir, 'figures'])
     pip.main(['install', '--prefix', venv_dir, 'fastdtw'])
     pip.main(['install', '--prefix', venv_dir, 'gensim'])
+    pip.main(['install', '--prefix', venv_dir, 'cPickle'])
 
     path = os.path.join('..', '..', 'graphs', dataset)
     print('\nRunning struc2vec using', dataset, '...\n')
     command = 'python src/main.py ' \
-              '--input ' + os.path.join(path, graphs[dataset]) + ' ' \
+              '--input "' + infile + '" ' \
               '--num-walks 80 ' \
               '--dimensions 128 ' \
               '--walk-length 40 ' \
               '--OPT1 True ' \
               '--OPT2 True ' \
               '--OPT3 True ' \
-              '--output ' + os.path.join(output, 'struc2vec_' + dataset + '.embeddings')
+              '--output "' + outfile + '"'
     run = subprocess.run(command, shell=True)
     print(run)
 
 def main():
     parser = argparse.ArgumentParser("struc2vec")
     parser.add_argument("dataset", help="Name of the dataset", type=str)
+    parser.add_argument("infile", help="Input file", type=str)
+    parser.add_argument("outfile", help="Output file", type=str)
     args = parser.parse_args()
-    execute(args.dataset)
-    
+    execute(args.dataset, args.infile, args.outfile)
+
 
 if __name__ == "__main__":
     main()

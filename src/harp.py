@@ -16,7 +16,7 @@ graphs = {
     "ca-AstroPh": "ca-AstroPh.txt"
 }
 
-def execute(dataset, output='.'):
+def execute(dataset, infile, outfile='.'):
     os.chdir("harp")
     print('Current directory is', os.getcwd())
     # create and activate the virtual environment
@@ -26,11 +26,14 @@ def execute(dataset, output='.'):
         virtualenv.create_environment(venv_dir)
     execfile(os.path.join(venv_dir, "bin", "activate_this.py"), globals())
 
-   
+
     print('\nSetting up harp ...\n')
-    git.Git("magic-graph").clone("git://github.com/phanein/magic-graph")
-    setup = subprocess.run("python magic-graph/setup.py install", shell=True)
-    print(setup)
+    try:
+        git.Git(".").clone("git://github.com/phanein/magic-graph")
+        setup = subprocess.run("python magic-graph/setup.py install", shell=True)
+        print(setup)
+    except Exception:
+        pass
 
     # pip install the requirements of harp in the virtual environment
     print('\nInstalling requirements of harp ...\n')
@@ -40,23 +43,25 @@ def execute(dataset, output='.'):
     print('\nRunning HARP using', dataset, '...\n')
     command = 'python ' + os.path.join('src', 'harp.py') + ' ' \
             '--format edgelist ' \
-            '--input ' + os.path.join(path, graphs[dataset]) + ' ' \
+            '--input "' + infile + '" ' \
             '--model deepwalk' \
             '--sfdp-path sfd_osx' \
             '--number-walks 10 ' \
             '--walk-length 40 ' \
             '--workers 1 ' \
-            '--output ' + os.path.join(output, 'harp_' + dataset + '.embeddings')              
-              
+            '--output "' + outfile + '"'
+
     run = subprocess.run(command, shell=True)
     print(run)
 
 def main():
     parser = argparse.ArgumentParser("HARP")
     parser.add_argument("dataset", help="Name of the dataset", type=str)
+    parser.add_argument("infile", help="Input file", type=str)
+    parser.add_argument("outfile", help="Output file", type=str)
     args = parser.parse_args()
-    execute(args.dataset)
-    
+    execute(args.dataset, args.infile, args.outfile)
+
 
 if __name__ == "__main__":
     main()

@@ -23,7 +23,7 @@ import utils
 
 GIT_REPOS = dict([
     ("deepwalk", "https://github.com/phanein/deepwalk.git"),
-    ("node2vec", "https://github.com/aditya-grover/node2vec.git"),
+    ("node2vec", "https://github.com/kameranis/node2vec.git"),
     ("struc2vec", "https://github.com/leoribeiro/struc2vec.git"),
     ("LINE", "https://github.com/tangjianpku/LINE.git"),
     ("HARP", "https://github.com/GTmac/HARP.git"),
@@ -156,23 +156,20 @@ def run(algorithm, dataset, **kwargs):
         raise ValueError("Unknown dataset: {}".format(dataset))
     infile = os.path.join(GRAPH_DIR, dataset, GRAPHS[dataset]["edgelist"])
     outfile = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.embeddings".format(algorithm, dataset))
-    utils.mkdir_p(os.path.basename(outfile))
+    utils.mkdir_p(os.path.dirname(outfile))
 
     if algorithm == "deepwalk":
-        p = subprocess.run(['python3', 'deepwalk.py', dataset])
-        print(p)
-    if algorithm == "deepwalk":
-        print(subprocess.run(['python3', 'deepwalk.py', dataset]))
+        print(subprocess.run(['python3', 'deepwalk.py', dataset, infile, outfile]))
     elif algorithm == "node2vec":
-        print(subprocess.run(['python3', 'node2vec.py', dataset]))
+        print(subprocess.run(['python3', 'node2vec.py', dataset, infile, outfile]))
     elif algorithm == "struc2vec":
-        print(subprocess.run(['python3', 'struc2vec.py', dataset]))
+        print(subprocess.run(['python3', 'struc2vec.py', dataset, infile, outfile]))
     elif algorithm == "LINE":
         name, ext = os.path.splitext(infile)
         infile = "{}_weighted{}".format(name, ext)
         raise NotImplementedError
     elif algorithm == "HARP":
-        print(subprocess.run(['python', 'harp.py', dataset]))
+        print(subprocess.run(['python', 'harp.py', dataset, infile, outfile]))
     elif algorithm == "LLE":
         raise NotImplementedError
     elif algorithm == "MDS":

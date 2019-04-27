@@ -14,7 +14,7 @@ graphs = {
     "ca-AstroPh": "ca-AstroPh.txt"
 }
 
-def execute(dataset, output='.'):
+def execute(dataset, infile, outfile='.'):
     os.chdir("node2vec")
     print('Current directory is', os.getcwd())
     # create and activate the virtual environment
@@ -31,8 +31,8 @@ def execute(dataset, output='.'):
     path = os.path.join('..', '..', 'graphs', dataset)
     print('\nRunning node2vec using', dataset, '...\n')
     command = 'python ' + os.path.join('src', 'main.py') + ' ' \
-              '--input ' + os.path.join(path, graphs[dataset]) + ' ' \
-              '--output ' + os.path.join(output, 'node2vec_' + dataset + '.embeddings') + ' ' \
+              '--input "' + infile + '" ' \
+              '--output "' + outfile + '" ' \
               '--num-walks 10 ' \
               '--walk-length 40'
     run = subprocess.run(command, shell=True)
@@ -41,9 +41,11 @@ def execute(dataset, output='.'):
 def main():
     parser = argparse.ArgumentParser("node2vec")
     parser.add_argument("dataset", help="Name of the dataset", type=str)
+    parser.add_argument("infile", help="Input file", type=str)
+    parser.add_argument("outfile", help="Output file", type=str)
     args = parser.parse_args()
-    execute(args.dataset)
-    
+    execute(args.dataset, args.infile, args.outfile)
+
 
 if __name__ == "__main__":
     main()
