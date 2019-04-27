@@ -172,7 +172,7 @@ def run(algorithm, dataset, **kwargs):
         infile = "{}_weighted{}".format(name, ext)
         raise NotImplementedError
     elif algorithm == "HARP":
-        raise NotImplementedError
+        print(subprocess.run(['python', 'harp.py', dataset]))
     elif algorithm == "LLE":
         raise NotImplementedError
     elif algorithm == "MDS":
