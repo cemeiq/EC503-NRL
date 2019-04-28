@@ -1,6 +1,6 @@
 \subsection{Matrix Factorization}
 \subsubsection*{Multidimensional Scaling (MDS)}
-Multidimensional Scaling (MDS) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$ so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
+Multidimensional Scaling (MDS) (see \ref{cox2000multidimensional} and \ref{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$ so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
 
 Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarity matrix. Then:
 \begin{enumerate}
@@ -16,7 +16,7 @@ Classical Multidimensional Scaling minimizes a loss function called \emph{strain
     \text{Strain}_D(x_1, ... , x_N) = \left( ({\sum_{i,j}b_{i,j}- \langle x_i,x_j \rangle})^2 \over \sum_{i,j}b_{i,j}^2\right).
 \]
 
-Classical MDS only works for Euclidean spaces, so in the context of graphs, we use a slightly different version of MDS. This minimized the following objective function (stress):
+Classical MDS only works for Euclidean spaces, so in the context of graphs, where the underlying metric is given by shortest path metric, we use a slightly different version of MDS. This variant, known as metric MDS, finds en embedding $x_1, ... , x_n$ minimizing the following objective function (stress):
 \[
     \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i \neq j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
 \]
