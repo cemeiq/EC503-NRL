@@ -151,7 +151,7 @@ def run(algorithm, dataset, **kwargs):
         return
     if dataset == "all":
         for dataset in GRAPHS:
-            run(algorith, dataset, **kwargs)
+            run(algorithm, dataset, **kwargs)
     if dataset not in GRAPHS:
         raise ValueError("Unknown dataset: {}".format(dataset))
     infile = os.path.join(GRAPH_DIR, dataset, GRAPHS[dataset]["edgelist"])
@@ -209,8 +209,8 @@ def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinea
     for dataset in datasets:
         for algorithm in algorithms:
             clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver)
-            embedding_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.embeddings".format(algorithm, dataset))
-            prediction_file = os.path.join(EMBEDDING_DIR, target, "{}_{}.predictions".format(algorithm, dataset))
+            embedding_file = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.embeddings".format(algorithm, dataset))
+            prediction_file = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.predictions".format(algorithm, dataset))
             X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
             X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
             y = read_labels(label_filename)
