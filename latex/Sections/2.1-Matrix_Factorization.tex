@@ -24,12 +24,16 @@ Another way to embed a graph in Euclidean space is given by the spectral embeddi
     \mathcal{L} = D^{-{1\over 2}}(D - A)D^{-{1\over 2}}
 \]
 
-One can prove that the quadratic form of the Laplacian is a relaxation to the minimum conductance cut problem defined as follows:
+Where $D$ is the $n \times n$ diagonal matrix of degrees of vertices and $A$ is the graph adjacency matrix. One can prove that the quadratic form of the Laplacian is a relaxation to the minimum conductance cut problem (see for instance \ref{chung1997spectral}) defined as follows:
 
 \[
     \underset{S  \subseteq V }{\text{minimize}} {|E(S,\overline{S})|\over \min\{vol(S), vol(\overline{S})\}}.
 \]
-The eigenvectors of the Laplacian therefore act as optimizers of the relaxation, and tend to align points in space so as to keep connected points close to each other.
+The eigenvectors of the Laplacian therefore act as optimizers of the relaxation, and tend to align points in space so as to keep connected points close to each other. Note that eigenvectors of the normalized Laplacian are solutions to the generalized eigenvalue problem:
+\[
+    L\mathbf{x} = \lambda D\mathbf{x}
+\]
+where $L$ is the (non-normalized) Laplacian matrix: $L = D-A$ and $D$ is defined as above. Spectral embeddings based on the Laplacian are common primitives used in other methods, such as manifold learning, (see for instance \ref{})
 
 \subsubsection*{Isomap}
 Isomap is a method for manifold learning / non-linear dimensionality reduction. In a general setting, given data points living in a (non-linear) manifold in $\mathbb{R}^n$ we would like to embed them into lower dimensional space while preserving geodesic distances.
