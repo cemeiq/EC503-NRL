@@ -41,14 +41,17 @@ def execute(dataset, infile, outfile='.'):
     # https://stackoverflow.com/a/17271444/
     from pip._internal import main as pip
     pip(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
+    subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'pip2.7') + ' install numpy', shell=True)
+    subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'pip2.7') + ' install six', shell=True)
+    subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'pip2.7') + ' install smart_open', shell=True)
     #pip.main(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
 
     print('\nRunning HARP using', dataset, '...\n')
     command = os.path.join(venv_dir, 'local', 'bin', 'python2.7') + ' ' + os.path.join('src', 'harp.py') + ' ' \
             '--format edgelist ' \
             '--input "' + infile + '" ' \
-            '--model deepwalk' \
-            '--sfdp-path sfd_osx' \
+            '--model line ' \
+            '--sfdp-path ' + os.path.join(os.getcwd() + 'bin' + 'sfdp_linux') + ' ' \
             '--number-walks 10 ' \
             '--walk-length 40 ' \
             '--workers 1 ' \
