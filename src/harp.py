@@ -2,11 +2,11 @@ import os
 import argparse
 import subprocess
 import virtualenv
-import pip
 from ipython_genutils.py3compat import execfile
 import git
-import shutil
+#import shutil
 
+# https://stackoverflow.com/a/17271444/
 graphs = {
     "facebook": 'facebook_combined.txt',
     "email-EU-core": "email-Eu-core.txt",
@@ -17,7 +17,7 @@ graphs = {
 }
 
 def execute(dataset, infile, outfile='.'):
-    os.chdir("harp")
+    os.chdir("HARP")
     print('Current directory is', os.getcwd())
     # create and activate the virtual environment
     print('\nRunning in a virtual environment')
@@ -26,22 +26,25 @@ def execute(dataset, infile, outfile='.'):
         virtualenv.create_environment(venv_dir)
     execfile(os.path.join(venv_dir, "bin", "activate_this.py"), globals())
 
+    magic_graph_dir = os.path.join(os.getcwd(), 'magic-graph')
+    if not os.path.exists(magic_graph_dir):
+        git.Git(".").clone("git://github.com/phanein/magic-graph")
+        os.chdir("magic-graph")
+        setup = subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'python2.7') + ' setup.py install', shell=True)
+        print(setup)
+        os.chdir("..")
 
     print('\nSetting up harp ...\n')
-    try:
-        git.Git(".").clone("git://github.com/phanein/magic-graph")
-        setup = subprocess.run("python magic-graph/setup.py install", shell=True)
-        print(setup)
-    except Exception:
-        pass
 
     # pip install the requirements of harp in the virtual environment
     print('\nInstalling requirements of harp ...\n')
-    pip.main(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
+    # https://stackoverflow.com/a/17271444/
+    from pip._internal import main as pip
+    pip(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
+    #pip.main(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
 
-    path = os.path.join('..', '..', 'graphs', dataset)
     print('\nRunning HARP using', dataset, '...\n')
-    command = 'python ' + os.path.join('src', 'harp.py') + ' ' \
+    command = os.path.join(venv_dir, 'local', 'bin', 'python2.7') + ' ' + os.path.join('src', 'harp.py') + ' ' \
             '--format edgelist ' \
             '--input "' + infile + '" ' \
             '--model deepwalk' \
@@ -51,7 +54,7 @@ def execute(dataset, infile, outfile='.'):
             '--workers 1 ' \
             '--output "' + outfile + '"'
 
-    run = subprocess.run(command, shell=True)
+    run = subprocess.call(command, shell=True)
     print(run)
 
 def main():
