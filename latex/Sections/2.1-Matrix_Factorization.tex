@@ -10,13 +10,18 @@ Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarit
   \item Find the top $m$ eigenvalues of $B$ $\lambda_1, ... \lambda_m$, and the corresponding eigenvalues $e_1, ... , e_m$,
   \item Let $X = E_m\Lambda^{1/2}$.
 \end{enumerate}
-(note to  self:doesn't work if distance not euclidean)
-
 
 Classical Multidimensional Scaling minimizes a loss function called \emph{strain}:
 \[
-    Strain_D(x_1, ... , x_N) = \left( ({\sum_{i,j}b_{i,j}- \langle x_i,x_j \rangle})^2 \over \sum_{i,j}b_{i,j}^2\right).
+    \text{Strain}_D(x_1, ... , x_N) = \left( ({\sum_{i,j}b_{i,j}- \langle x_i,x_j \rangle})^2 \over \sum_{i,j}b_{i,j}^2\right).
 \]
+
+Classical MDS only works for Euclidean spaces, so in the context of graphs, we use a slightly different version of MDS. This minimized the following objective function (stress):
+\[
+    \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i \neq j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
+\]
+
+
 
 \subsubsection*{Spectral Embedding}
 Another way to embed a graph in Euclidean space is given by the spectral embedding. This method computes the $k$ eigenvectors of the normalized Laplacian matrix $\mathcal{L}$  corresponding to the $k$ smallest eigenvalues, and uses each of them as an embedding of the  vertices into $\mathbb{R}$, resulting in an  embedding into $\mathbb{R}^k$. The normalized Laplacian matrix is given by:
@@ -33,7 +38,9 @@ The eigenvectors of the Laplacian therefore act as optimizers of the relaxation,
 \[
     L\mathbf{x} = \lambda D\mathbf{x}
 \]
-where $L$ is the (non-normalized) Laplacian matrix: $L = D-A$ and $D$ is defined as above. Spectral embeddings based on the Laplacian are common primitives used in other methods, such as manifold learning, (see for instance \ref{})
+where $L$ is the (non-normalized) Laplacian matrix: $L = D-A$ and $D$ is defined as above. Spectral embeddings based on the Laplacian are common primitives used in other methods, such as manifold learning, (see for instance \ref{belkin2003laplacian}).
 
+\iffalse
 \subsubsection*{Isomap}
 Isomap is a method for manifold learning / non-linear dimensionality reduction. In a general setting, given data points living in a (non-linear) manifold in $\mathbb{R}^n$ we would like to embed them into lower dimensional space while preserving geodesic distances.
+\fi
