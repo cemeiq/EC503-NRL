@@ -1,6 +1,6 @@
 \subsection{Matrix Factorization}
 \subsubsection*{Multidimensional Scaling (MDS)}
-Multidimensional Scaling (MDS) (see \ref{cox2000multidimensional} and \ref{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$ so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
+Multidimensional Scaling (MDS) (see \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$ so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
 
 Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarity matrix. Then:
 \begin{enumerate}
