@@ -1,1 +1,19 @@
-\section{Conclusion}
+\section{Conclusions}
+
+\subsubsection*{Other directions}
+
+
+Most of the aforementioned context searching strategies used in network embedding models rely on a definition of context nodes that is identical for all networks and does not adapt to the properties or the application domain of each graph. Therefore, much work has been done on unifying different network embeddings under a general framework. The most significant ones are the following:
+\begin{itemize}
+\item \textbf{GraphAttention:}
+In \cite{velivckovic2017graph}, the proposed method automatically learns different attention parameters for different networks, by parameterizing the attention over the power series of a transition matrix.
+\item \textbf{GEM-D:}
+In \cite{chen2017fast}, the authors' approach decomposes graph embedding algorithms, such as Laplacian Eigenvectors, DeepWalk, LINE, and node2vec, into three building blocks: node proximity function, warping function and loss function. It shows that these algorithms can all be unified under this framework, and tests different design choices for each building block on real-world graphs, to pick the triple which works the best empirically.  
+\item \textbf{NetMF:}
+In \cite{Qiu:2018:NEM:3159652.3159706}, the authors show that models such as DeepWalk, LINE, PTE, and node2vec, which use a negative sampling method, can be unified into a matrix factorization framework with closed forms, and provide the theoretical connections between skip-gram based network embedding algorithms and graph Laplacian. Based on these observations, they present the NetMF method for DeepWalk and LINE, as well as its approximation algorithm for computing network embedding, and show it offers significant improvements over the aforementioned models for conventional network mining tasks.
+\end{itemize}
+
+Similarly, many methods have been proposed to reduce the dependence of the existing embedding methods upon general loss functions
+and optimization models, which are not tuned for any particular task, and hence tend to have a suboptimal performance in comparison to end-to-end task-specific embedding methods. 
+For example, in \cite{abu2017learning}, the authors propose a new definition of the graph likelihood function, designed specifically for link prediction.
+
