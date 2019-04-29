@@ -11,6 +11,8 @@ When edge weights have a high variance, scales of the gradients in SGD diverge, 
 
 To combine first- and second-order proximity, a simple way is to concatenate the vector representations learned by both into a longer vector, and reweigh the dimensions, to balance the two representations. It was found that in practice, optimization takes $O(|E|)$ time, and the overall complexity of LINE is $O(d(K+1))$, given that K is the number of negative samples and $d<<|V|$ the dimension of the lower-dimensional space.
 
+As a way to better combine first- and second-order proximities, the authors propose to jointly train the objective function in the future. Also, they suggest that higher-order proximity approaches could be applied to provide a better result. Another objective could be to find new embeddings of heterogeneous information networks, meaning graphs with vertices of multiple types. Furthermore, the case of no observed connections between new and existing vertices could be explored in the future by resorting to other network information, such as the textual information of the vertices.
+
 \subsubsection*{HARP}
 
 HARP is a meta strategy which solves the graph representation learning problem using a hierarchical approach. 
