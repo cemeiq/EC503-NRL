@@ -29,7 +29,7 @@ Another way to embed a graph in Euclidean space is given by the spectral embeddi
     \mathcal{L} = D^{-{1\over 2}}(D - A)D^{-{1\over 2}}
 \]
 
-Where $D$ is the $n \times n$ diagonal matrix of degrees of vertices and $A$ is the graph adjacency matrix. One can prove that the quadratic form of the Laplacian is a relaxation to the minimum conductance cut problem (see for instance \ref{chung1997spectral}) defined as follows:
+Where $D$ is the $n \times n$ diagonal matrix of degrees of vertices and $A$ is the graph adjacency matrix. One can prove that the quadratic form of the Laplacian is a relaxation to the minimum conductance cut problem (see for instance \cite{chung1997spectral}) defined as follows:
 
 \[
     \underset{S  \subseteq V }{\text{minimize}} {|E(S,\overline{S})|\over \min\{vol(S), vol(\overline{S})\}}.
@@ -38,7 +38,7 @@ The eigenvectors of the Laplacian therefore act as optimizers of the relaxation,
 \[
     L\mathbf{x} = \lambda D\mathbf{x}
 \]
-where $L$ is the (non-normalized) Laplacian matrix: $L = D-A$ and $D$ is defined as above. Spectral embeddings based on the Laplacian are common primitives used in other methods, such as manifold learning, (see for instance \ref{belkin2003laplacian}).
+where $L$ is the (non-normalized) Laplacian matrix: $L = D-A$ and $D$ is defined as above. Spectral embeddings based on the Laplacian are common primitives used in other methods, such as manifold learning, (see for instance \cite{belkin2003laplacian}).
 
 \iffalse
 \subsubsection*{Isomap}
