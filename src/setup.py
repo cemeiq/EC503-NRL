@@ -207,6 +207,12 @@ def run(algorithm, dataset, **kwargs):
             run(algorithm, dataset, **kwargs)
     if dataset not in GRAPHS:
         raise ValueError("Unknown dataset: {}".format(dataset))
+    if dataset=="PPI":
+        for i in range(1,25):
+            infile = os.path.join(GRAPH_DIR, "PPI", "ppi_{num:02d}.edgelist".format(num=i))
+            outfile = os.path.join(EMBEDDING_DIR, dataset, "{}_ppi_{num:02d}.embeddings".format(algorithm, num=i))
+            executor(algorithm,dataset,infile,outfile)
+        return
     infile = os.path.join(GRAPH_DIR, dataset, GRAPHS[dataset]["edgelist"])
     outfile = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.embeddings".format(algorithm, dataset))
     utils.mkdir_p(os.path.dirname(outfile))
