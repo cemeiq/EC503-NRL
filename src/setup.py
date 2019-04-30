@@ -8,6 +8,7 @@ warnings.filterwarnings("ignore")
 import os
 import argparse
 import subprocess
+import json
 from git import Repo
 import numpy as np
 import pandas as pd
@@ -16,6 +17,7 @@ import networkx as nx
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score, classification_report, confusion_matrix, precision_score, recall_score
+import sklearn.manifold
 
 from IPython.display import display, HTML, display_html
 
@@ -64,7 +66,7 @@ GRAPHS = dict([
     }),
     ("PPI", {
         "links": "http://snap.stanford.edu/graphsage/ppi.zip",
-        "edgelist": "ppi/ppi/ppi-walks.txt",
+        "edgelist": "ppi/ppi/ppi-G.json",
         "labels": "ppi/ppi/ppi-class_map.json",
     }),
 ])
@@ -123,8 +125,9 @@ def clean(target, verbose=False, **kwargs):
     edgelist_filename = os.path.join(target_dir, GRAPHS[target]["edgelist"])
     basename, ext = os.path.splitext(edgelist_filename)
     weighted_edgelist_filename = "{}_weighted{}".format(basename, ext)
-    G = nx.read_edgelist(edgelist_filename, nodetype=int)
     if target == "PPI":
+        with open(edgelist_filename, 'r') as f:
+            G = nx.readwrite.json_graph.node_link_graph(json.load(f))
         M = sorted([a for a in nx.connected_component_subgraphs(G) if len(a) > 100], key=len)
         f = pd.DataFrame(np.load(os.path.join(target_dir, "ppi/ppi/ppi-feats.npy")))
         c = pd.read_json(os.path.join(target_dir, "ppi/ppi/ppi-class_map.json")).T
@@ -136,6 +139,7 @@ def clean(target, verbose=False, **kwargs):
             ci.to_json(os.path.join(target_dir, "ppi_{:02d}.classes".format(i+1)))
             fi.to_json(os.path.join(target_dir, "ppi_{:02d}.features".format(i+1)))
     else:
+        G = nx.read_edgelist(edgelist_filename, nodetype=int)
         G = max(nx.connected_component_subgraphs(G), key=len)
         nx.write_edgelist(G, edgelist_filename)
         for _, _, d in G.edges(data=True):
@@ -171,16 +175,32 @@ def run(algorithm, dataset, **kwargs):
         raise NotImplementedError
     elif algorithm == "HARP":
         print(subprocess.run(['python', 'harp.py', dataset, infile, outfile]))
-    elif algorithm == "LLE":
-        raise NotImplementedError
     elif algorithm == "MDS":
-        raise NotImplementedError
+        G = nx.read_edgelist(infile, nodetype=int)
+        A = {}
+        for source, lengths in nx.all_pairs_shortest_path_length(G):
+            A[source] = lengths
+        A = pd.DataFrame(A)
+        A = A.loc[A.index, A.index]
+        mds = sklearn.manifold.MDS(n_components=128, max_iter=300, eps=1e-3, n_jobs=2, dissimilarity="precomputed")
+        mds.fit(A)
+        embedding = pd.DataFrame(mds.embedding_, index=G.nodes(data=False))
+        with open(outfile, "w") as f:
+            print(len(G), 128, file=f)
+            for n, e in embedding.iterrows():
+                print("{} {}".format(n, ' '.join(str(i) for i in e)), file=f)
+
     elif algorithm == "SpectralEmbedding":
-        raise NotImplementedError
-    elif algorithm == "LTSA":
-        raise NotImplementedError
-    elif algorithm == "tSNE":
-        raise NotImplementedError
+        G = nx.read_edgelist(infile, nodetype=int)
+        L = nx.normalized_laplacian_matrix(G)
+        eigenvalues, eigenvectors = np.linalg.eig(L.todense())
+        idx = eigenvalues.argsort(eigenvalues)
+        embedding = pd.DataFrame(eigenvectors[:, idx[1:129]] * eigenvalues[idx[1:129]], index=G.nodes(data=False))
+        with open(outfile, "w") as f:
+            print(len(G), 128, file=f)
+            for n, e in embedding.iterrows():
+                print("{} {}".format(n, ' '.join(str(i) for i in e)), file=f)
+
     elif algorithm == "Mdeff":
         raise NotImplementedError
     elif algorithm == "Kipf":
@@ -193,6 +213,8 @@ def run(algorithm, dataset, **kwargs):
 
 def read_labels(dataset):
     labels = None
+    if "labels" not in GRAPHS[dataset]:
+        return labels
     if GRAPHS[dataset]["labels"].startswith("http"):
         filename = os.path.join(GRAPH_DIR, dataset, os.path.basename(os.path.splitext(GRAPHS[dataset]["labels"])[0]))
     else:
@@ -238,7 +260,7 @@ def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinea
             X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
             X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
             y = read_labels(data_set)
-            if labels is None:
+            if y is None:
                 continue
 
             # Keep only nodes that are in both X and y
@@ -280,7 +302,7 @@ def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinea
                                           "F1-weighted"]).T
     results_file = os.path.join(ROOT_DIR, "results", "{}_{}_results.html".format(algorithm, dataset))
     with open(results_file, "w") as f:
-        f.write(results.style.apply(highlight_max)._repr_html_())
+        f.write(results._repr_html_())
 
 
 def highlight_max(s):
