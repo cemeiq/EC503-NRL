@@ -34,7 +34,8 @@ def execute(dataset, infile, outfile='.'):
               '--input "' + infile + '" ' \
               '--output "' + outfile + '" ' \
               '--num-walks 10 ' \
-              '--walk-length 40'
+              '--walk-length 40 ' \
+              '--undirected'
     run = subprocess.run(command, shell=True)
     print(run)
 

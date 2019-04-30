@@ -17,7 +17,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score, classification_report, confusion_matrix, precision_score, recall_score
 
-from IPython.display import display, HTML
+from IPython.display import display, HTML, display_html
 
 import utils
 
@@ -37,7 +37,7 @@ GRAPHS = dict([
     ("email-EU-core", {
         "links": "https://snap.stanford.edu/data/email-Eu-core.txt.gz",
         "labels": "https://snap.stanford.edu/data/email-Eu-core-department-labels.txt.gz",
-        "edgelist": "email-Eu-core-department-labels.txt",
+        "edgelist": "email-Eu-core.txt",
     }),
     ("com-Youtube", {
         "links": "https://snap.stanford.edu/data/bigdata/communities/com-youtube.ungraph.txt.gz",
@@ -54,17 +54,18 @@ GRAPHS = dict([
     }),
     ("dblp", {
         "links": "https://snap.stanford.edu/data/bigdata/communities/com-dblp.ungraph.txt.gz",
-        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-dblp.all.cmty.txt.gz",
+        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-dblp.top5000.cmty.txt.gz",
         "edgelist": "com-dblp.ungraph.txt",
     }),
     ("com-amazon", {
         "links": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.ungraph.txt.gz",
-        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.all.cmty.txt.gz",
+        "labels": "https://snap.stanford.edu/data/bigdata/communities/com-amazon.top5000.cmty.txt.gz",
         "edgelist": "com-amazon.ungraph.txt",
     }),
     ("PPI", {
         "links": "http://snap.stanford.edu/graphsage/ppi.zip",
         "edgelist": "ppi/ppi/ppi-walks.txt",
+        "labels": "ppi/ppi/ppi-class_map.json",
     }),
 ])
 
@@ -136,10 +137,10 @@ def clean(target, verbose=False, **kwargs):
             fi.to_json(os.path.join(target_dir, "ppi_{:02d}.features".format(i+1)))
     else:
         G = max(nx.connected_component_subgraphs(G), key=len)
+        nx.write_edgelist(G, edgelist_filename)
         for _, _, d in G.edges(data=True):
             if "weight" not in d:
                 d["weight"] = 1
-        nx.write_edgelist(G, edgelist_filename)
         nx.write_weighted_edgelist(G, weighted_edgelist_filename)
 
 
@@ -190,10 +191,33 @@ def run(algorithm, dataset, **kwargs):
         raise NotImplementedError
 
 
+def read_labels(dataset):
+    labels = None
+    if GRAPHS[dataset]["labels"].startswith("http"):
+        filename = os.path.join(GRAPH_DIR, dataset, os.path.basename(os.path.splitext(GRAPHS[dataset]["labels"])[0]))
+    else:
+        filename = os.path.join(GRAPH_DIR, dataset, GRAPHS[dataset]["labels"])
+    if dataset == "email-EU-core":
+        labels = pd.read_csv(filename, header=None, index_col=0, sep=' ')
+    elif dataset in ["dblp", "com-amazon", "com-Youtube"]:
+        labels = []
+        with open(filename, 'r') as f:
+            for i, line in enumerate(f):
+                c = [int(i) for i in line.split()]
+                if len(c) > 50:
+                    labels.append({node: 1 for node in c})
+        labels = pd.DataFrame(labels).T
+        labels[np.isnan(labels)] = 0
+    elif dataset == "PPI":
+        labels = None
+
+    return labels
+
+
 def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinear", **kwargs):
     """Runs classification on the embedding produced by the specified algorithm on some dataset"""
     if algorithm == "all":
-        algorithms = list(ALGORITHMS.keys())
+        algorithms = ALGORITHMS
     elif algorithm in ALGORITHMS:
         algorithms = [algorithm]
     else:
@@ -206,29 +230,65 @@ def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinea
     else:
         raise ValueError("Unknown dataset: {}.".format(dataset))
     results = {}
-    for dataset in datasets:
-        for algorithm in algorithms:
-            clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver)
-            embedding_file = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.embeddings".format(algorithm, dataset))
-            prediction_file = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.predictions".format(algorithm, dataset))
+    for data_set in datasets:
+        for algo in algorithms:
+            clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver, class_weight="balanced")
+            embedding_file = os.path.join(EMBEDDING_DIR, data_set, "{}_{}.embeddings".format(algo, data_set))
+            prediction_file = os.path.join(EMBEDDING_DIR, data_set, "{}_{}.predictions".format(algo, data_set))
             X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
             X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
-            y = read_labels(label_filename)
-            X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, y, X.index)
-            y_pred = clf.fit(X_train, y_train).predict(X_test)
-            results[(dataset, algorithm)] = ([precision_score(y_test, y_pred, average="micro"),
+            y = read_labels(data_set)
+            if labels is None:
+                continue
+
+            # Keep only nodes that are in both X and y
+            ind = X.index.intersection(y.index)
+            X = X.loc[ind, :]
+            y = y.loc[ind, :]
+            print(y.shape)
+
+            if len(y.shape) > 1 and all(dim > 1 for dim in y.shape):
+                res = []
+                for _, labels in y.iteritems():
+                    X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, labels, X.index)
+                    y_pred = clf.fit(X_train, y_train).predict(X_test)
+                    res.append([precision_score(y_test, y_pred, average="micro"),
                         recall_score(y_test, y_pred, average="micro"),
                         f1_score(y_test, y_pred, average="micro"),
                         precision_score(y_test, y_pred, average="macro"),
                         recall_score(y_test, y_pred, average="macro"),
                         f1_score(y_test, y_pred, average="macro"),
                         f1_score(y_test, y_pred, average="weighted")])
+                res = pd.DataFrame(res, columns=["Precision (micro)", "Recall (micro)", "F1 (micro)",
+                                          "Precision (macro)", "Recall (macro)", "F1 (macro)",
+                                          "F1-weighted"]).mean(axis=0)
+
+            else:
+                X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, y, X.index)
+                y_pred = clf.fit(X_train, y_train).predict(X_test)
+                res = ([precision_score(y_test, y_pred, average="micro"),
+                        recall_score(y_test, y_pred, average="micro"),
+                        f1_score(y_test, y_pred, average="micro"),
+                        precision_score(y_test, y_pred, average="macro"),
+                        recall_score(y_test, y_pred, average="macro"),
+                        f1_score(y_test, y_pred, average="macro"),
+                        f1_score(y_test, y_pred, average="weighted")])
+
+            results[(data_set, algo)] = res
     results = pd.DataFrame(results, index=["Precision (micro)", "Recall (micro)", "F1 (micro)",
                                           "Precision (macro)", "Recall (macro)", "F1 (macro)",
                                           "F1-weighted"]).T
-    results_file = os.path.join(ROOT_DIR, "results.html")
+    results_file = os.path.join(ROOT_DIR, "results", "{}_{}_results.html".format(algorithm, dataset))
     with open(results_file, "w") as f:
-        f.write(display_html(results.style.apply(highlight_max)._repr_html_(), raw=True))
+        f.write(results.style.apply(highlight_max)._repr_html_())
+
+
+def highlight_max(s):
+    '''
+    highlight the maximum in a Series yellow.
+    '''
+    is_max = s == s.max()
+    return ['background-color: yellow' if v else '' for v in is_max]
 
 
 def parse_args():
@@ -254,7 +314,7 @@ def parse_args():
 
     # classify parser
     parser_classify = subparsers.add_parser("classify", help="Run Logistic Regression on some ebedding")
-    parser_classify.set_defaults(func="classify")
+    parser_classify.set_defaults(func=classify)
     parser_classify.add_argument("algorithm", choices=["all"] + ALGORITHMS, default="all", help="Which algorithm's embeddings to use")
     parser_classify.add_argument("dataset", choices=["all"] + list(GRAPHS.keys()), default="all", help="Whose dataset's embedding to use as input")
     parser_classify.add_argument("--penalty", choices=["l1", "l2"], default="l2",
