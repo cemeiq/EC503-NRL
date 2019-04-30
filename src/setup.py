@@ -150,6 +150,54 @@ def clean(target, verbose=False, **kwargs):
 
 def run(algorithm, dataset, **kwargs):
     """Runs the specified algorithm on some dataset"""
+    def executor(algorithm, dataset, infile, outfile):
+        if algorithm == "deepwalk":
+            print(subprocess.run(['python3', 'deepwalk.py', dataset, infile, outfile]))
+        elif algorithm == "node2vec":
+            print(subprocess.run(['python3', 'node2vec.py', dataset, infile, outfile]))
+        elif algorithm == "struc2vec":
+            print(subprocess.run(['python3', 'struc2vec.py', dataset, infile, outfile]))
+        elif algorithm == "LINE":
+            name, ext = os.path.splitext(infile)
+            infile = "{}_weighted{}".format(name, ext)
+            raise NotImplementedError
+        elif algorithm == "HARP":
+            print(subprocess.run(['python', 'harp.py', dataset, infile, outfile]))
+        elif algorithm == "MDS":
+            G = nx.read_edgelist(infile, nodetype=int)
+            A = {}
+            for source, lengths in nx.all_pairs_shortest_path_length(G):
+                A[source] = lengths
+            A = pd.DataFrame(A)
+            A = A.loc[A.index, A.index]
+            mds = sklearn.manifold.MDS(n_components=128, max_iter=300, eps=1e-3, n_jobs=2, dissimilarity="precomputed")
+            mds.fit(A)
+            embedding = pd.DataFrame(mds.embedding_, index=G.nodes(data=False))
+            with open(outfile, "w") as f:
+                print(len(G), 128, file=f)
+                for n, e in embedding.iterrows():
+                    print("{} {}".format(n, ' '.join(str(i) for i in e)), file=f)
+        elif algorithm == "SpectralEmbedding":
+            G = nx.read_edgelist(infile, nodetype=int)
+            L = nx.normalized_laplacian_matrix(G)
+            eigenvalues, eigenvectors = np.linalg.eig(L.todense())
+            eigenvalues = np.real(eigenvalues)
+            eigenvectors = np.real(eigenvectors)
+            idx = np.argsort(eigenvalues)
+            embedding = pd.DataFrame(np.multiply(eigenvectors[:, idx[1:129]], eigenvalues[idx[1:129]]), index=G.nodes(data=False))
+            with open(outfile, "w") as f:
+                print(len(G), 128, file=f)
+                for n, e in embedding.iterrows():
+                    print("{} {}".format(n, ' '.join(str(i) for i in e)), file=f)
+        elif algorithm == "Mdeff":
+            raise NotImplementedError
+        elif algorithm == "Kipf":
+            raise NotImplementedError
+        elif algorithm == "SAGE":
+            raise NotImplementedError
+        elif algorithm == "LGCN":
+            raise NotImplementedError
+
     if algorithm == "all":
         for algorithm in ALGORITHMS:
             run(algorithm, dataset, **kwargs)
@@ -162,53 +210,7 @@ def run(algorithm, dataset, **kwargs):
     infile = os.path.join(GRAPH_DIR, dataset, GRAPHS[dataset]["edgelist"])
     outfile = os.path.join(EMBEDDING_DIR, dataset, "{}_{}.embeddings".format(algorithm, dataset))
     utils.mkdir_p(os.path.dirname(outfile))
-
-    if algorithm == "deepwalk":
-        print(subprocess.run(['python3', 'deepwalk.py', dataset, infile, outfile]))
-    elif algorithm == "node2vec":
-        print(subprocess.run(['python3', 'node2vec.py', dataset, infile, outfile]))
-    elif algorithm == "struc2vec":
-        print(subprocess.run(['python3', 'struc2vec.py', dataset, infile, outfile]))
-    elif algorithm == "LINE":
-        name, ext = os.path.splitext(infile)
-        infile = "{}_weighted{}".format(name, ext)
-        raise NotImplementedError
-    elif algorithm == "HARP":
-        print(subprocess.run(['python', 'harp.py', dataset, infile, outfile]))
-    elif algorithm == "MDS":
-        G = nx.read_edgelist(infile, nodetype=int)
-        A = {}
-        for source, lengths in nx.all_pairs_shortest_path_length(G):
-            A[source] = lengths
-        A = pd.DataFrame(A)
-        A = A.loc[A.index, A.index]
-        mds = sklearn.manifold.MDS(n_components=128, max_iter=300, eps=1e-3, n_jobs=2, dissimilarity="precomputed")
-        mds.fit(A)
-        embedding = pd.DataFrame(mds.embedding_, index=G.nodes(data=False))
-        with open(outfile, "w") as f:
-            print(len(G), 128, file=f)
-            for n, e in embedding.iterrows():
-                print("{} {}".format(n, ' '.join(str(i) for i in e)), file=f)
-
-    elif algorithm == "SpectralEmbedding":
-        G = nx.read_edgelist(infile, nodetype=int)
-        L = nx.normalized_laplacian_matrix(G)
-        eigenvalues, eigenvectors = np.linalg.eig(L.todense())
-        idx = eigenvalues.argsort(eigenvalues)
-        embedding = pd.DataFrame(eigenvectors[:, idx[1:129]] * eigenvalues[idx[1:129]], index=G.nodes(data=False))
-        with open(outfile, "w") as f:
-            print(len(G), 128, file=f)
-            for n, e in embedding.iterrows():
-                print("{} {}".format(n, ' '.join(str(i) for i in e)), file=f)
-
-    elif algorithm == "Mdeff":
-        raise NotImplementedError
-    elif algorithm == "Kipf":
-        raise NotImplementedError
-    elif algorithm == "SAGE":
-        raise NotImplementedError
-    elif algorithm == "LGCN":
-        raise NotImplementedError
+    executor(algorithm, dataset, infile, outfile)
 
 
 def read_labels(dataset):
