@@ -85,11 +85,12 @@ In order to perform pooling in a fast and memory efficient manner, nodes are
 organized in a balanced binary tree. Specifically, after coarsening, each node
 has either two childer, if it was matched at the finer level, or one, if it was
 not. Those singleton nodes are paired with fake nodes, having a neutral value
--with respect to the activation function- as its input. A visualization of  this
+-with respect to the activation function- as its input. A visualization of this
 operation, can be seen at Fig.~\ref{pooldef}.
 \begin{figure}
 \includegraphics[scale=0.5]{pooling_def}
-\caption{Pooling operation, using Greclus clustering and arranging nodes in a balanced binary tree}
+\caption{Pooling operation, using Greclus clustering and arranging nodes in a
+balanced binary tree. Blue nodes are added fake nodes}
 \label{pooldef}
 \end{figure}
 \subsubsection*{$1^{st}$ order approximation and semi-supervised classification}
@@ -124,5 +125,28 @@ overfitting on local neighborhood structures. Setting, further, $\theta_0 =
 -\theta_1 = \theta$, leaves their model with only a single parameter to learn.
 Thus, the convolution operation is now:\\
 $g_\theta * x \approx \theta (\widetilde{D}^{-\frac{1}{2}}\widetilde{A}\widetilde{D}^{-\frac{1}{2}})
-x$
+x$\\
+For a signal $X \in \mathbb{R}^{NxC}$, $F$ filters or feature maps, the
+complexity of the above operation is now $O(|E|FC)$.\\
+\spara{Semi-supervised classification}
+By conditioning the model $f(X,A)$ on both the data $X$ and on the adjacency
+matrix $A$, this model can be used on semi-supervised tasks, where not all
+samples are labeled, expecting that the adjacency matrix will contain enough
+information not present in the data matrix $X$.\\
+Thus, for semi-supervised classification a \textbf{cross-entropy loss} over all labeled
+examples is used:
+\begin{equation}
+\mathcal{L} = - \sum_{l\in \mathcal{Y_L}} \sum_{f=1}^{F} Y_{lf}lnZ_{lf} 
+\end{equation}
+where $\mathcal{Y}_L$ is the set of labeled nodes.\\
+Though this work seems to work well in practice providing good results for
+certain classification tasks in real networks (like citation networks), it has
+some certain \textbf{limitations}: 1. It uses gradient descent for training, which
+situable only for dataset sizes that can fit in memory. 2. The single-parameter
+model and the abscence of pooling operations make this work not suitable for IVC
+tasks, like image segmentation, as in regular graphs, it results into sharing
+the same kernel (up to a multiplication factor) across all layers and all units 
+in entire network.\cite{blogpost} 3. The recursive expansion of neighborhoods
+across layers incurs expensive computations, as for power-law graphs, a single
+vertex can quickly fill up a large portion of the graph. \cite{fastgcn}. 
 \subsubsection*{GraphSAGE}
