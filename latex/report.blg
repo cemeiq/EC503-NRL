@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2018)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: report.aux
+The style file: iclr2019_conference.bst
+Database file #1: iclr2019_conference.bib
+Warning--I didn't find a database entry for "40k"
+Warning--I didn't find a database entry for "survey"
+Warning--I didn't find a database entry for "kleinberg_book"
+Warning--I didn't find a database entry for "smth"
+Warning--I didn't find a database entry for "Lecun"
+Warning--I didn't find a database entry for "shuman"
+Warning--I didn't find a database entry for "defferard"
+Warning--there's a number but no series in chung1997spectral
+Warning--empty journal in de2011applications
+You've used 11 entries,
+            2773 wiz_defined-function locations,
+            668 strings with 6933 characters,
+and the built_in function-call counts, 5661 in all, are:
+= -- 505
+> -- 355
+< -- 9
++ -- 119
+- -- 108
+* -- 452
+:= -- 864
+add.period$ -- 39
+call.type$ -- 11
+change.case$ -- 67
+chr.to.int$ -- 11
+cite$ -- 24
+duplicate$ -- 260
+empty$ -- 433
+format.name$ -- 127
+if$ -- 1199
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 13
+newline$ -- 66
+num.names$ -- 44
+pop$ -- 140
+preamble$ -- 1
+purify$ -- 58
+quote$ -- 0
+skip$ -- 213
+stack$ -- 0
+substring$ -- 182
+swap$ -- 42
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 111
+warning$ -- 2
+while$ -- 46
+width$ -- 0
+write$ -- 154
+(There were 9 warnings)

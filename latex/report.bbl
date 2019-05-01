@@ -1,0 +1,81 @@
+\begin{thebibliography}{11}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Abu-El-Haija et~al.(2017)Abu-El-Haija, Perozzi, and
+  Al-Rfou]{abu2017learning}
+Sami Abu-El-Haija, Bryan Perozzi, and Rami Al-Rfou.
+\newblock Learning edge representations via low-rank asymmetric projections.
+\newblock In \emph{Proceedings of the 2017 ACM on Conference on Information and
+  Knowledge Management}, pp.\  1787--1796. ACM, 2017.
+
+\bibitem[Belkin \& Niyogi(2003)Belkin and Niyogi]{belkin2003laplacian}
+Mikhail Belkin and Partha Niyogi.
+\newblock Laplacian eigenmaps for dimensionality reduction and data
+  representation.
+\newblock \emph{Neural computation}, 15\penalty0 (6):\penalty0 1373--1396,
+  2003.
+
+\bibitem[Borg \& Groenen(2003)Borg and Groenen]{borg2003modern}
+Ingwer Borg and Patrick Groenen.
+\newblock Modern multidimensional scaling: Theory and applications.
+\newblock \emph{Journal of Educational Measurement}, 40\penalty0 (3):\penalty0
+  277--280, 2003.
+
+\bibitem[Chen et~al.(2018)Chen, Perozzi, Al-Rfou, and Skiena]{chen2018tutorial}
+Haochen Chen, Bryan Perozzi, Rami Al-Rfou, and Steven Skiena.
+\newblock A tutorial on network embeddings.
+\newblock \emph{arXiv preprint arXiv:1808.02590}, 2018.
+
+\bibitem[Chen et~al.(2017)Chen, Niu, Akoglu, Kova{\v{c}}evi{\'c}, and
+  Faloutsos]{chen2017fast}
+Siheng Chen, Sufeng Niu, Leman Akoglu, Jelena Kova{\v{c}}evi{\'c}, and Christos
+  Faloutsos.
+\newblock Fast, warped graph embedding: Unifying framework and one-click
+  algorithm.
+\newblock \emph{arXiv preprint arXiv:1702.05764}, 2017.
+
+\bibitem[Chung \& Graham(1997)Chung and Graham]{chung1997spectral}
+Fan~RK Chung and Fan~Chung Graham.
+\newblock \emph{Spectral graph theory}.
+\newblock Number~92. American Mathematical Soc., 1997.
+
+\bibitem[Cox \& Cox(2000)Cox and Cox]{cox2000multidimensional}
+Trevor~F Cox and Michael~AA Cox.
+\newblock \emph{Multidimensional scaling}.
+\newblock Chapman and hall/CRC, 2000.
+
+\bibitem[De~Leeuw(1977)]{de2011applications}
+Jan De~Leeuw.
+\newblock Applications of convex analysis to multidimensional scaling.
+\newblock 1977.
+
+\bibitem[Ng et~al.(2002)Ng, Jordan, and Weiss]{ng2002spectral}
+Andrew~Y Ng, Michael~I Jordan, and Yair Weiss.
+\newblock On spectral clustering: Analysis and an algorithm.
+\newblock In \emph{Advances in neural information processing systems}, pp.\
+  849--856, 2002.
+
+\bibitem[Qiu et~al.(2018)Qiu, Dong, Ma, Li, Wang, and
+  Tang]{Qiu:2018:NEM:3159652.3159706}
+Jiezhong Qiu, Yuxiao Dong, Hao Ma, Jian Li, Kuansan Wang, and Jie Tang.
+\newblock Network embedding as matrix factorization: Unifying deepwalk, line,
+  pte, and node2vec.
+\newblock In \emph{Proceedings of the Eleventh ACM International Conference on
+  Web Search and Data Mining}, WSDM '18, pp.\  459--467, New York, NY, USA,
+  2018. ACM.
+\newblock ISBN 978-1-4503-5581-0.
+\newblock \doi{10.1145/3159652.3159706}.
+\newblock URL \url{http://doi.acm.org/10.1145/3159652.3159706}.
+
+\bibitem[Veli{\v{c}}kovi{\'c} et~al.(2017)Veli{\v{c}}kovi{\'c}, Cucurull,
+  Casanova, Romero, Lio, and Bengio]{velivckovic2017graph}
+Petar Veli{\v{c}}kovi{\'c}, Guillem Cucurull, Arantxa Casanova, Adriana Romero,
+  Pietro Lio, and Yoshua Bengio.
+\newblock Graph attention networks.
+\newblock \emph{arXiv preprint arXiv:1710.10903}, 2017.
+
+\end{thebibliography}
