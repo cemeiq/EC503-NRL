@@ -3,10 +3,10 @@ Graph data is pervasive in modern data analysis. In Computer Science, graphs hav
 
 In order to analyze network data it is often useful to obtain a representation of the vertices of the graph in Euclidean Space (an \textbf{embedding}). This allows us to leverage the power of machine learning and data mining techniques that are tailored to Euclidean setting and use them to make sense of the properties of the graph. In order for this to work, the embedding has to somehow encode some of the information and patterns that were contained in the original network. Some desirable properties the embedding should satisfy are the following (\cite{chen2018tutorial}):
 
-\textbf{Adaptability} Since data might be changing over time, the embedding should be efficiently updatable,\\
-\textbf{Scalability} The embedding should be computable on large graphs,\\
-\textbf{Community Awareness} The Euclidean distance in the embedding should reflect the community structure of the underlying graph,\\
-\textbf{Low Dimensionality} Having a low dimensional embedding often allows for better generalization.\\
+\textbf{1. Adaptability} Since data might be changing over time, the embedding should be efficiently updatable,\\
+\textbf{2. Scalability} The embedding should be computable on large graphs,\\
+\textbf{3. Community Awareness} The Euclidean distance in the embedding should reflect the community structure of the underlying graph,\\
+\textbf{4. Low Dimensionality} Having a low dimensional embedding often allows for better generalization.\\
 
 
 The problem of finding the best such embedding has proved to be far from trivial, and while many solutions have been proposed, there appears to be no universal answer.
