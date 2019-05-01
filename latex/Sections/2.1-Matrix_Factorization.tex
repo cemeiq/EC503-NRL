@@ -1,4 +1,4 @@
-\subsection{Matrix Factorization}
+\subsection{Matrix Methods}
 \subsubsection*{Multidimensional Scaling (MDS)}
 Multidimensional Scaling (MDS) (see \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$ so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
 
@@ -21,7 +21,21 @@ Classical MDS only works for Euclidean spaces, so in the context of graphs, wher
     \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i \neq j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
 \]
 
+This minimization is done through the SMaCoF (scaling by majorization fo complicated functions) algorithm \cite{de2011applications}. The algorithm is the following:
 
+\begin{algorithm}[H]
+\SetAlgoLined
+\While{$\sigma(X^{k-1})  - \sigma(X^{k}) \geq \epsilon$}{
+  $Z \gets X^{k-1}$ \\
+  $X^k \gets \underset{X}{\min}\hspace{1mm} \tau (X,Z)$
+}
+\caption{SMaCoF algorithm}
+\end{algorithm}
+
+where:
+\[
+  \tau(X,Z) :=
+\]
 
 \subsubsection*{Spectral Embedding}
 Another way to embed a graph in Euclidean space is given by the spectral embedding. This method computes the $k$ eigenvectors of the normalized Laplacian matrix $\mathcal{L}$  corresponding to the $k$ smallest eigenvalues, and uses each of them as an embedding of the  vertices into $\mathbb{R}$, resulting in an  embedding into $\mathbb{R}^k$. The normalized Laplacian matrix is given by:
