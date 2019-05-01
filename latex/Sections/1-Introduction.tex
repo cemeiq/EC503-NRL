@@ -1,12 +1,12 @@
 \section{Introduction}
-Graph data is pervasive in modern data analysis. In Computer Science, graphs have been an object of study for decades, representing a fundamental tool in the area of data structures and algorithms, and a model for systems ranging from computer networks and social networks to the World Wide Web. The impact of graphs has however vastly exceeded the boundaries of Computer Science, as these models have been used in fields as diverse as Biology, where they are used, for instance, to represent protein interaction networks, and Operation Research, in which they are used to model infrastructure networks, such as systems of roads or pipes.
+Graph data is pervasive in modern data analysis. In Computer Science, graphs have been an object of study for decades, representing a fundamental tool in the area of data structures and algorithms, and a model for systems ranging from computer networks and social networks to the World Wide Web. The impact of graphs has however vastly exceeded the boundaries of Computer Science, as these models have been used in fields as diverse as Biology, where they represent, for instance protein interaction networks, and Operation Research, in which they appear as models infrastructure networks, such as systems of roads or pipes.
 
-In order to analyze network data it is often useful to obtain a representation of the vertices of the graph in Euclidean Space (an \textbf{embedding}). This allows us to leverage the power of machine learning and data mining techniques that are tailored to Euclidean setting and use them to make sense of the properties of the graph. In order for this to work, the embedding has to somehow encode some of the information and patterns that were contained in the original network. Some desirable properties the embedding should satisfy are the following \cite{chen2018tutorial}:
+In order to analyze network data it is often useful to obtain a representation of the vertices of the graph in Euclidean Space (an \textbf{embedding}). This allows us to leverage the power of machine learning and data mining techniques that are tailored to Euclidean setting and use them to make sense of the properties of the graph. In order for this to work, the embedding has to somehow encode some of the information and patterns that were contained in the original network. Some desirable properties the embedding should satisfy are the following (\cite{chen2018tutorial}):
 
 \textbf{Adaptability} Since data might be changing over time, the embedding should be efficiently updatable,\\
 \textbf{Scalability} The embedding should be computable on large graphs,\\
-\textbf{Community aware} The Euclidean distance in the embedding should preserve the community structure of the underlying graph,\\
-\textbf{Low dimensionality} Having a low dimensional embedding often allows for better generalization.\\
+\textbf{Community Awareness} The Euclidean distance in the embedding should reflect the community structure of the underlying graph,\\
+\textbf{Low Dimensionality} Having a low dimensional embedding often allows for better generalization.\\
 
 
 The problem of finding the best such embedding has proved to be far from trivial, and while many solutions have been proposed, there appears to be no universal answer.
@@ -14,9 +14,9 @@ The problem of finding the best such embedding has proved to be far from trivial
 In this project we will look at some of the embedding techniques that have been developed and test their effectiveness in the context of a simple machine learning task.
 
 
-\subsection*{Definitions}
-We now now introduce out objects of study.
+\subsection{Definitions}
+We now now introduce our objects of study.
 
-A \textbf{(undirected) graph} is a pair $(V,E)$, where $V$ is a finite set of \textbf{vertices} (or nodes) and $E$ is a collection of \textbf{edges} (/links). Each element of $E$ is a two-element subset $\{v,u\}$ of $V$, encoding the property that the vertex $u \in V$ is connected to the vertex $v \in V$.\\
+A \textbf{(undirected) graph} is a pair $(V,E)$, where $V$ is a finite set of \textbf{vertices} (/nodes) and $E$ is a collection of \textbf{edges} (/links). Each element of $E$ is a two-element subset $\{v,u\}$ of $V$, encoding the property that the vertex $v \in V$ is connected to the vertex $u \in V$.\\
 
 A graph \textbf{embedding} for a given graph $G = (V,E)$ is a function $\Phi:V \to \mathbb{R}^{|V| \times d}$.

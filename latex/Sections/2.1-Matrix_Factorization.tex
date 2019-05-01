@@ -1,13 +1,13 @@
 \subsection{Matrix Methods}
-\subsubsection*{Multidimensional Scaling (MDS)}
-Multidimensional Scaling (MDS) (see \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$ so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
+\subsubsection{Multidimensional Scaling (MDS)}
+Multidimensional Scaling (MDS) (see \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$, so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
 
 Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarity matrix. Then:
 \begin{enumerate}
   \item Let $D^{(2)}$ be the point-wise square of the distance matrix,
   \item Let $J = I - {1\over n}\vec{1}\vec{1}^T$,
   \item Let $B = -{1 \over 2}JD^{(2)}J$,
-  \item Find the top $m$ eigenvalues of $B$ $\lambda_1, ... \lambda_m$, and the corresponding eigenvalues $e_1, ... , e_m$,
+  \item Find the top $m$ eigenvalues of $B$ $\lambda_1, ... \lambda_m$, and the corresponding eigenvectors $e_1, ... , e_m$,
   \item Let $X = E_m\Lambda^{1/2}$.
 \end{enumerate}
 
@@ -21,10 +21,10 @@ Classical MDS only works for Euclidean spaces, so in the context of graphs, wher
     \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i < j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
 \]
 
-This minimization is done through the SMaCoF (scaling by majorization fo complicated functions) algorithm \cite{de2011applications}. Note that the stress can be written as:
+This minimization is done through the SMaCoF (scaling by majorization for complicated functions) algorithm \cite{de2011applications}. Note that the stress can be written as:
 
 \[
-  \text{Stress}_D(x_1, ... , x_n) = \sum_{i < j} d_{i,j}^2 - 2\sum_{i<j} ||x_i - x_j||^2 + \sum_{i<j} ||x_i - x_j||^2
+  \text{Stress}_D(x_1, ... , x_n) = \sum_{i < j} d_{i,j}^2 - 2\sum_{i<j} d_{i,j}||x_i - x_j|| + \sum_{i<j} ||x_i - x_j||^2
 \]
 where the first summand is a constant:
 \[
@@ -37,8 +37,8 @@ the second term is quadratic in $X$: it equals $X^THX$ where $H$ is the hessian 
 where:
 \[
     B(Z)_{i,j} = \begin{cases} {d_{i,j}\over||z_i - z_j||} &\text{if }||z_i - z_j||\neq 0 \text{ and }i\neq j\\
-    0 &\text{if} ||z_i - z_j|| = 0\text{ and }i \neq j\\
-    -\sum_{k \neq i} &\text{if} i=j\end{cases}
+    \hspace{5mm}0 &\text{if } ||z_i - z_j|| = 0\text{ and }i \neq j\\
+    -\sum_{k \neq i}B(Z)_{i,k} &\text{if } i=j\end{cases}
 \]
 Where $Z$ is given in the following algorithm:
 
@@ -56,7 +56,7 @@ where:
   \tau(X,Z) := \sum_{i,j}d_{i,j}^2 + \text{tr}(X^T V X) - 2 \text{tr}(X^TB(Z)Z)
 \]
 
-\subsubsection*{Spectral Embedding}
+\subsubsection{Spectral Embedding}
 Another way to embed a graph in Euclidean space is given by the spectral embedding. This method computes the $k$ eigenvectors of the normalized Laplacian matrix $\mathcal{L}$  corresponding to the $k$ smallest eigenvalues, and uses each of them as an embedding of the  vertices into $\mathbb{R}$, resulting in an  embedding into $\mathbb{R}^k$. The normalized Laplacian matrix is given by:
 \[
     \mathcal{L} = D^{-{1\over 2}}(D - A)D^{-{1\over 2}}
@@ -71,9 +71,4 @@ The eigenvectors of the Laplacian therefore act as optimizers of the relaxation,
 \[
     L\mathbf{x} = \lambda D\mathbf{x}
 \]
-where $L$ is the (non-normalized) Laplacian matrix: $L = D-A$ and $D$ is defined as above. Spectral embeddings based on the Laplacian are common primitives used in other methods, such as manifold learning, (see for instance \cite{belkin2003laplacian}). These techniques are also at the heart of a common graph clustering algorithm known as spectral clustering \cite{ng2002spectral}.
-
-\iffalse
-\subsubsection*{Isomap}
-Isomap is a method for manifold learning / non-linear dimensionality reduction. In a general setting, given data points living in a (non-linear) manifold in $\mathbb{R}^n$ we would like to embed them into lower dimensional space while preserving geodesic distances.
-\fi
+where $L$ is the (non-normalized) Laplacian matrix: $L = D-A$ and $D$ is defined as above. Spectral embeddings based on the Laplacian are common primitives used in other methods, such as manifold learning, (see for instance (\cite{belkin2003laplacian})). These techniques are also at the heart of a common graph clustering algorithm known as spectral clustering (\cite{ng2002spectral}).

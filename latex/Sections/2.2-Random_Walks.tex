@@ -62,7 +62,7 @@ similarity and community membership in the social network graphs.
 
 Deepwalk initializes a mapping
 $\Phi: \mathbb{R}^{\mid V \mid \times S} \to \mathbb{R}^{\mid V\mid \times d}$
-where $S$ in the size of the features space. Then, using random walks deepwalk 
+where $S$ in the size of the features space. Then, using random walks deepwalk
 solves the following optimization problem:
 \begin{align}
     \min_{\Phi}
@@ -148,7 +148,7 @@ paper~\cite{grover2016node2vec}.}
 \label{node2vec_png}
 \end{figure}
 
-\subsubsection*{LINE}
+\subsubsection{LINE}
 
 LINE (\cite{DBLP:journals/corr/TangQWZYM15}) is a network embedding model, able to handle very large, arbitrary types of graph networks $G=(V,E)$, (undirected, directed and/or weighted), by optimizing an objective which preserves both local and global network structures. Local structures are represented by the observed links in the networks, as for each pair of vertices linked by edge $(u, v)$, the weight $w_{uv}$ on that edge indicates the first-order proximity between u and v. Global structure is the second-order proximity between the vertices, determined through the shared neighborhood structures, as nodes with shared neighbors are likely to be similar. If $p_u = (w_{u,1}; \dots ;w_{u,|V|})$ denotes the first-order proximity of u with all the other vertices, then the second-order proximity between u and v is the similarity between $p_u$ and $p_v$.
 
@@ -161,7 +161,7 @@ To combine first- and second-order proximity, a simple way is to concatenate the
 
 As a way to better combine first- and second-order proximities, the authors propose to jointly train the objective function in the future. Also, they suggest that higher-order proximity approaches could be applied to provide a better result. Another objective could be to find new embeddings of heterogeneous information networks, meaning graphs with vertices of multiple types. Furthermore, the case of no observed connections between new and existing vertices could be explored in the future by resorting to other network information, such as the textual information of the vertices.
 
-\subsubsection*{HARP}
+\subsubsection{HARP}
 
 HARP (\cite{DBLP:journals/corr/ChenPHS17}) is a meta strategy which solves the graph representation learning problem using a hierarchical approach.
 All methods described before could easily get stuck at a bad local minima as the result of poor initialization of the non-convex optimization. Moreover,these methods mostly aim to preserve local proximities in a graph but neglect its global structure.
