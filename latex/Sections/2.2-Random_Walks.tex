@@ -102,11 +102,11 @@ can give us the nodes $s_4, s_5, s_6$.
 \begin{center}
 \includegraphics[width=0.7\textwidth]{figures/sampling.png}
 \end{center}
-\label{sampling_strategies}
 \caption{Using the BFS sampling strategy, we can obtain the nodes
 $s_1, s_2, s_3$ as the 3 neighbors of $u$. Using the DFS sampling strategy we
 can obtain $\{s_4, s_5, s_6\}$. The figure is copied from the original
 paper~\cite{grover2016node2vec}.}
+\label{sampling_strategies}
 \end{figure}
 The BFS strategy can create random walks that capture the structural similarities
 between nodes. For example, consider a network graphs with nodes that correspond
@@ -140,12 +140,12 @@ Fig~\ref{node2vec_png} and $d_{tx}$ is the shortest path from $t$ to $x$.
 \begin{center}
 \includegraphics[width=0.5\textwidth]{figures/node2vec.png}
 \end{center}
-\label{node2vec_png}
 \caption{A random walk in the node2vec algorithm. The current node is the node
 $v$ which was chosen as a neighbor to the vertex $t$.
 Going back to $t$ is controlled by the parameter $p$, while going forward is
 controlled by parameter $q$. The figure is copied from the original
 paper~\cite{grover2016node2vec}.}
+\label{node2vec_png}
 \end{figure}
 
 \subsubsection*{LINE}
