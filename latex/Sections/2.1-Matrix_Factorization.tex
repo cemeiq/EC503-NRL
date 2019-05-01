@@ -1,11 +1,11 @@
 \subsection{Matrix Methods}
 \subsubsection{Multidimensional Scaling (MDS)}
-Multidimensional Scaling (MDS) (see \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has distance / dissimilarity information. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$, so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
+Multidimensional Scaling (MDS) (see \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has information about distance or dissimilarity among the datapoints. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$, so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
 
 Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarity matrix. Then:
 \begin{enumerate}
   \item Let $D^{(2)}$ be the point-wise square of the distance matrix,
-  \item Let $J = I - {1\over n}\vec{1}\vec{1}^T$,
+  \item Let $J = I - {1\over n}{\mathbf{1}}{\mathbf{1}}^T$,
   \item Let $B = -{1 \over 2}JD^{(2)}J$,
   \item Find the top $m$ eigenvalues of $B$ $\lambda_1, ... \lambda_m$, and the corresponding eigenvectors $e_1, ... , e_m$,
   \item Let $X = E_m\Lambda^{1/2}$.
@@ -21,7 +21,7 @@ Classical MDS only works for Euclidean spaces, so in the context of graphs, wher
     \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i < j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
 \]
 
-This minimization is done through the SMaCoF (scaling by majorization for complicated functions) algorithm \cite{de2011applications}. Note that the stress can be written as:
+This minimization is done through the SMaCoF (scaling by majorization for complicated functions) algorithm ()\cite{de2011applications}). Note that the stress can be written as:
 
 \[
   \text{Stress}_D(x_1, ... , x_n) = \sum_{i < j} d_{i,j}^2 - 2\sum_{i<j} d_{i,j}||x_i - x_j|| + \sum_{i<j} ||x_i - x_j||^2
