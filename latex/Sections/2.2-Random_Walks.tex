@@ -62,8 +62,8 @@ similarity and community membership in the social network graphs.
 
 Deepwalk initializes a mapping
 $\Phi: \mathbb{R}^{\mid V \mid \times S} \to \mathbb{R}^{\mid V\mid \times d}$
-where $S$ in the size of features space. Then, using random walks deepwalk solves
-the following optimization problem:
+where $S$ in the size of the features space. Then, using random walks deepwalk 
+solves the following optimization problem:
 \begin{align}
     \min_{\Phi}
         \left (-\log{Pr({v_{i-w},
@@ -138,7 +138,7 @@ where $t$ is the previous node in the random walk as shown in
 Fig~\ref{node2vec_png} and $d_{tx}$ is the shortest path from $t$ to $x$.
 \begin{figure}
 \begin{center}
-\includegraphics[width=0.7\textwidth]{figures/node2vec.png}
+\includegraphics[width=0.5\textwidth]{figures/node2vec.png}
 \end{center}
 \label{node2vec_png}
 \caption{A random walk in the node2vec algorithm. The current node is the node
