@@ -1,0 +1,59 @@
+This is BibTeX, Version 0.99d (TeX Live 2017)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: report.aux
+The style file: iclr2019_conference.bst
+Database file #1: iclr2019_conference.bib
+Warning--I didn't find a database entry for "ng2002spectral"
+Warning--I didn't find a database entry for "40k"
+Warning--I didn't find a database entry for "survey"
+Warning--I didn't find a database entry for "kleinberg_book"
+Warning--I didn't find a database entry for "smth"
+Warning--I didn't find a database entry for "Lecun"
+Warning--I didn't find a database entry for "shuman"
+Warning--I didn't find a database entry for "defferard"
+Warning--I didn't find a database entry for "Kulis"
+Warning--I didn't find a database entry for "kipf"
+Warning--I didn't find a database entry for "mddef"
+Warning--there's a number but no series in chung1997spectral
+You've used 9 entries,
+            2773 wiz_defined-function locations,
+            663 strings with 6698 characters,
+and the built_in function-call counts, 4742 in all, are:
+= -- 422
+> -- 315
+< -- 7
++ -- 105
+- -- 96
+* -- 391
+:= -- 733
+add.period$ -- 33
+call.type$ -- 9
+change.case$ -- 57
+chr.to.int$ -- 9
+cite$ -- 19
+duplicate$ -- 208
+empty$ -- 349
+format.name$ -- 113
+if$ -- 997
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 11
+newline$ -- 56
+num.names$ -- 36
+pop$ -- 114
+preamble$ -- 1
+purify$ -- 50
+quote$ -- 0
+skip$ -- 172
+stack$ -- 0
+substring$ -- 146
+swap$ -- 31
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 89
+warning$ -- 1
+while$ -- 37
+width$ -- 0
+write$ -- 130
+(There were 12 warnings)

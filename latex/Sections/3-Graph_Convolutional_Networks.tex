@@ -7,7 +7,7 @@ of graph networked data. The use of graph structures in computer
 vision\cite{survey}, as well in the representation of social networks
 \cite{kleinberg_book}, has made this task look appealing and worth of investigation-research.
 However, using convolutional neural networks for
-networked data directly, is not straightforward and it poses significant
+networked data directly, is not a straightforward task and it poses significant
 challenges.\\
 \spara{Challenges in Graph Convolutional Networks} First and foremost,
 as CNNs were mainly used for image classification, they assume that
@@ -48,7 +48,7 @@ This approach has, however, the following limitations:
 multiplication with the Fourier basis $U$.
 \end{itemize}
 
-\subsubsection*{ChebNet\cite{defferard}}
+\subsubsection*{Spectral CNN using Chebyshev Polynomials}
 Deferrard et al. \cite{defferard} were the first to propose a way to deal with
 the above issues.\\
 \spara{Localized Filter} First of all, they propose the use of a polynomial filter:\\
@@ -85,10 +85,44 @@ In order to perform pooling in a fast and memory efficient manner, nodes are
 organized in a balanced binary tree. Specifically, after coarsening, each node
 has either two childer, if it was matched at the finer level, or one, if it was
 not. Those singleton nodes are paired with fake nodes, having a neutral value
--with respect to the activation function- as its input. On the following figure,
-we can see a visualization of this pooling procedure:\\
-
-its input signal.
-\subsubsection*{Kipf}
-
+-with respect to the activation function- as its input. A visualization of  this
+operation, can be seen at Fig.~\ref{pooldef}.
+\begin{figure}
+\includegraphics[scale=0.5]{pooling_def}
+\caption{Pooling operation, using Greclus clustering and arranging nodes in a balanced binary tree}
+\label{pooldef}
+\end{figure}
+\subsubsection*{$1^{st}$ order approximation and semi-supervised classification}
+Kipf and Welling \cite{kipf} build upon the previous work of Defferrard
+presented above, introducing simplifications that allow for significantly faster training
+times and higher predictive accuracy. Also, in their framework they introduce a
+way to perform semi-supervised classification tasks, hence their model has the
+ability to classify nodes, even if most samples of the dataset are unlabeled.\\
+A very simple form of a later -wise propagation rule would be of the form:
+\begin{equation*}
+f(H^{(l+1)},A) = \sigma(AH^{(l)}W^{(l)})
+\end{equation*}
+where $W^{(l)}$ is the weight matrix of the $l$-layer of the neural network,
+$H^{(l)}$ is the matrix of activations at the previous layer, and $\sigma(\cdot
+)$ could be  a non-linear activation function, like ReLU.\\
+However, this propagation rule, has some limitations. FIrst of all, a node only
+sums features of neighboring nodes, but not itself. Hence, we need to augment
+the adjacency matrix with self-loops, $\widetilde{A} = A + I_N$. Secondly, as
+long as $A$ is not normalized, this summation will change the scale of features,
+hence we need a symmetric normalization, i.e.
+$D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$ to get rid of this problem. Thus, the
+propagation rule now becomes:\\
+\begin{equation}
+H^{(l+1)} =
+\sigma(\widetilde{D}^{-\frac{1}{2}}\widetilde{A}\widetilde{D}^{-\frac{1}{2}}H^{(l)}W^{(l)})
+\end{equation}
+As most real-world networks (e.g. social networks, citation networks, knowledge
+graphs) have distributions close to power-law, the authors propose to restrict
+the Chebyshev filters proposed by \cite{mddef} to $K=1$, expecting that this
+simplification will allow them to build deeper models and avoid any possible
+overfitting on local neighborhood structures. Setting, further, $\theta_0 =
+-\theta_1 = \theta$, leaves their model with only a single parameter to learn.
+Thus, the convolution operation is now:\\
+$g_\theta * x \approx \theta (\widetilde{D}^{-\frac{1}{2}}\widetilde{A}\widetilde{D}^{-\frac{1}{2}})
+x$
 \subsubsection*{GraphSAGE}
