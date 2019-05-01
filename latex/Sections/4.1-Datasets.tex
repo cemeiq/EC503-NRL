@@ -1,2 +1,34 @@
 \subsection{Datasets}
 
+The world is full of graphs and this shows in the available datasets. From citation networks to
+online communities to biological networks, all are available online.  We focused on five datasets
+for the matrix factorization and random walk based algorithms.
+
+For each dataset we have kept only the largest weakly connected component, as network embeddings
+have no meaning between disconnected components.
+
+{\bf \href{https://snap.stanford.edu/data/email-Eu-core.html}{email-EU-core}}: This dataset was
+generated using email data from a large European research institution. There is an edge between
+nodes $u$ and $v$ if person $u$ sent an email to person $v$.  Each person belongs to one of the 42
+departments of the institution. The dataset contains 986 nodes and 25552 edges.
+
+{\bf \href{https://snap.stanford.edu/data/com-Youtube.html}{com-Youtube}~\cite{mislove-2007-socialnetworks}}:
+This is the largest dataset we used with 1134890 nodes and 2987624 edges. Edges are friendships and
+the classes are user defined groups.
+
+{\bf \href{https://snap.stanford.edu/data/com-DBLP.html}{dblp}}: This is a citation network from
+computer science research papers. Every author is a node and two authors are connected if they have
+co-authored one paper. Each community is a publication venue where the authors published. The
+network has 317080 nodes and 1049866 edges.
+
+{\bf \href{https://snap.stanford.edu/data/com-Amazon.html}{com-amazon}}: This dataset was collected
+by crawling the Amazon website. Each node is a product and two products are connected if they appear
+in Amazon's {\it Customers Who Bought This Item Also Bought} feature. The groundtruth communities
+are the connected components in each product category.  This network has 334863 nodes and 925872
+edges.
+
+{\bf \href{http://snap.stanford.edu/graphsage/}{PPI}~\cite{hamilton2017inductive}}: Protein-Protein
+Interaction network. Each node in this network corresponds to a protein and and edge exists between
+two proteins if an interaction between them has been recorded. There are 24 disconnected graphs
+correcsponding to different human tissues.  The labels come from gene ontology (121)
+from~\cite{subramanian2005gene}. The average graph has 2360 nodes and average degree 14.4.
