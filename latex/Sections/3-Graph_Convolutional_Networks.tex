@@ -49,3 +49,46 @@ multiplication with the Fourier basis $U$.
 \end{itemize}
 
 \subsubsection*{ChebNet\cite{defferard}}
+Deferrard et al. \cite{defferard} were the first to propose a way to deal with
+the above issues.\\
+\spara{Localized Filter} First of all, they propose the use of a polynomial filter:\\
+\begin{equation}
+g_{\theta}(\Lambda ) = \sum_{k=0}^{K-1}\theta_k \Lambda^k
+\end{equation}
+where the parameter $\theta \in \mathbb{R}^K$ is a vector of polynomial
+coefficients. As $(L^K)_{i,j} = 0$ whenever $d_{\mathcal{G}}(i,j)>K$, these
+spectral filters are $K$-localized.\\
+\spara{Learning complexity} Their learning complexity is equal to the support
+size of the filter, hence $O(K)$, as in conventional CNNs.\\
+\spara{Computational cost of filtering} As mentioned earlier, because of the
+multiplication of the filter with the Fourier basis $U$, the computational cost
+is relatively high, $O(n^2)$. For this reason, the express the filter as a
+Chebyshev polynomial of order $k$, that can be computed using the recurrence
+$T_k(x) = 2xT_{k-1}(x)-T_{k-2}(x)$ with $T_o = 1$ and $T_1 = x$. Thus, the whole
+filtering operation can be written as $y = g_{\theta}(L)x =
+\sum_{k=0}^{K-1}\theta_k T_k (\widetilde{\Lambda })x$, where $T_k (\Lambda ) \in
+\mathbb{R}^{nxn}$ is the Chebyshev polynomial of order $k$ evaluated at the
+scaled Laplacian $\widetilde{\Lambda} = 2L/\lambda_{max} - I_n$, using the
+recurrence $\bar{x}_k = 2\widetilde{\Lambda}\bar{x}_{k-1} - \bar{x}_{k-2}$, with
+$\bar{x}_0 = x$ and $\bar{x}_1 = \widetilde{\Lambda}x$. The cost of the
+filtering operation becomes then $O(K|E|)$, as it is a multiplication of a
+sparse matrix with a column vector of size $K$.\\
+\spara{Graph Coarsening and Pooling}
+Pooling on traditional convolutional neural networks, is performed usually on a
+patch of neighboring pixels on an image. However, in graphs, we can not explicitly
+define this notion of neighborhood as in a Euclidean grid. Therefore, the authors of
+this paper propose a multilevel clustering approach, that not only clusters
+similar vertices - in a topological fashion- together, but also produces coarser
+versions of the graph on each level, resembling closely the pooling operation of traditional
+CNNs. The multilevel clustering algorithm chosen is Graclus \cite{Kulis}.\\
+In order to perform pooling in a fast and memory efficient manner, nodes are
+organized in a balanced binary tree. Specifically, after coarsening, each node
+has either two childer, if it was matched at the finer level, or one, if it was
+not. Those singleton nodes are paired with fake nodes, having a neutral value
+-with respect to the activation function- as its input. On the following figure,
+we can see a visualization of this pooling procedure:\\
+
+its input signal.
+\subsubsection*{Kipf}
+
+\subsubsection*{GraphSAGE}
