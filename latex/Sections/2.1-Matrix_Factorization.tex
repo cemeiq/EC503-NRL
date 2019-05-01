@@ -18,10 +18,29 @@ Classical Multidimensional Scaling minimizes a loss function called \emph{strain
 
 Classical MDS only works for Euclidean spaces, so in the context of graphs, where the underlying metric is given by shortest path metric, we use a slightly different version of MDS. This variant, known as metric MDS, finds en embedding $x_1, ... , x_n$ minimizing the following objective function (stress):
 \[
-    \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i \neq j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
+    \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i < j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
 \]
 
-This minimization is done through the SMaCoF (scaling by majorization fo complicated functions) algorithm \cite{de2011applications}. The algorithm is the following one:
+This minimization is done through the SMaCoF (scaling by majorization fo complicated functions) algorithm \cite{de2011applications}. Note that the stress can be written as:
+
+\[
+  \text{Stress}_D(x_1, ... , x_n) = \sum_{i < j} d_{i,j}^2 - 2\sum_{i<j} ||x_i - x_j||^2 + \sum_{i<j} ||x_i - x_j||^2
+\]
+where the first summand is a constant:
+\[
+    C = \sum_{i < j} d_{i,j}^2
+\]
+the second term is quadratic in $X$: it equals $X^THX$ where $H$ is the hessian matrix, and the third term is bounded by:
+\[
+    \sum_{i<j} ||x_i - x_j||^2 \geq \text{tr}(X^TB(Z)Z)
+\]
+where:
+\[
+    B(Z)_{i,j} = \begin{cases} {d_{i,j}\over||z_i - z_j||} &\text{if }||z_i - z_j||\neq 0 \text{ and }i\neq j\\
+    0 &\text{if} ||z_i - z_j|| = 0\text{ and }i \neq j\\
+    -\sum_{k \neq i} &\text{if} i=j\end{cases}
+\]
+Where $Z$ is given in the following algorithm:
 
 \begin{algorithm}[H]
 \SetAlgoLined
@@ -34,7 +53,7 @@ This minimization is done through the SMaCoF (scaling by majorization fo complic
 
 where:
 \[
-  \tau(X,Z) :=
+  \tau(X,Z) := \sum_{i,j}d_{i,j}^2 + \text{tr}(X^T V X) - 2 \text{tr}(X^TB(Z)Z)
 \]
 
 \subsubsection*{Spectral Embedding}
