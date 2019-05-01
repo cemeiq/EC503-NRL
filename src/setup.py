@@ -151,6 +151,7 @@ def clean(target, verbose=False, **kwargs):
 def run(algorithm, dataset, **kwargs):
     """Runs the specified algorithm on some dataset"""
     def executor(algorithm, dataset, infile, outfile):
+        print(infile)
         if algorithm == "deepwalk":
             print(subprocess.run(['python3', 'deepwalk.py', dataset, infile, outfile]))
         elif algorithm == "node2vec":
@@ -219,7 +220,7 @@ def run(algorithm, dataset, **kwargs):
     executor(algorithm, dataset, infile, outfile)
 
 
-def read_labels(dataset):
+def read_labels(dataset, i=None):
     labels = None
     if "labels" not in GRAPHS[dataset]:
         return labels
@@ -227,6 +228,8 @@ def read_labels(dataset):
         filename = os.path.join(GRAPH_DIR, dataset, os.path.basename(os.path.splitext(GRAPHS[dataset]["labels"])[0]))
     else:
         filename = os.path.join(GRAPH_DIR, dataset, GRAPHS[dataset]["labels"])
+    if not os.path.exists(filename):
+        return labels
     if dataset == "email-EU-core":
         labels = pd.read_csv(filename, header=None, index_col=0, sep=' ')
     elif dataset in ["dblp", "com-amazon", "com-Youtube"]:
@@ -239,13 +242,56 @@ def read_labels(dataset):
         labels = pd.DataFrame(labels).T
         labels[np.isnan(labels)] = 0
     elif dataset == "PPI":
-        labels = None
+        filename = os.path.join(GRAPH_DIR, "PPI", "ppi_{:02d}.classes".format(i))
+        labels = pd.read_json(filename)
 
     return labels
 
 
 def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinear", **kwargs):
     """Runs classification on the embedding produced by the specified algorithm on some dataset"""
+    def executor(data_set, algo, y, embedding_file):
+        clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver, class_weight="balanced")
+        X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
+        X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
+        if y is None:
+            return None
+
+        # Keep only nodes that are in both X and y
+        ind = X.index.intersection(y.index)
+        X = X.loc[ind, :]
+        y = y.loc[ind, :]
+        print(y.shape)
+
+        if len(y.shape) > 1 and all(dim > 1 for dim in y.shape):
+            res = []
+            for _, labels in y.iteritems():
+                X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, labels, X.index)
+                y_pred = clf.fit(X_train, y_train).predict(X_test)
+                res.append([precision_score(y_test, y_pred, average="micro"),
+                    recall_score(y_test, y_pred, average="micro"),
+                    f1_score(y_test, y_pred, average="micro"),
+                    precision_score(y_test, y_pred, average="macro"),
+                    recall_score(y_test, y_pred, average="macro"),
+                    f1_score(y_test, y_pred, average="macro"),
+                    f1_score(y_test, y_pred, average="weighted")])
+            res = pd.DataFrame(res, columns=["Precision (micro)", "Recall (micro)", "F1 (micro)",
+                                      "Precision (macro)", "Recall (macro)", "F1 (macro)",
+                                      "F1-weighted"]).mean(axis=0)
+
+        else:
+            X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, y, X.index)
+            y_pred = clf.fit(X_train, y_train).predict(X_test)
+            res = ([precision_score(y_test, y_pred, average="micro"),
+                    recall_score(y_test, y_pred, average="micro"),
+                    f1_score(y_test, y_pred, average="micro"),
+                    precision_score(y_test, y_pred, average="macro"),
+                    recall_score(y_test, y_pred, average="macro"),
+                    f1_score(y_test, y_pred, average="macro"),
+                    f1_score(y_test, y_pred, average="weighted")])
+        return res
+
+
     if algorithm == "all":
         algorithms = ALGORITHMS
     elif algorithm in ALGORITHMS:
@@ -262,62 +308,42 @@ def classify(algorithm, dataset, penalty="l2", tol=1e-4, C=1.0, solver="liblinea
     results = {}
     for data_set in datasets:
         for algo in algorithms:
-            clf = LogisticRegression(penalty=penalty, tol=tol, C=C, solver=solver, class_weight="balanced")
-            embedding_file = os.path.join(EMBEDDING_DIR, data_set, "{}_{}.embeddings".format(algo, data_set))
-            prediction_file = os.path.join(EMBEDDING_DIR, data_set, "{}_{}.predictions".format(algo, data_set))
-            X = pd.read_csv(embedding_file, skiprows=1, index_col=0, header=None, sep=' ').sort_index()
-            X = (X - X.mean(axis=0)) / np.linalg.norm(X, axis=0)
-            y = read_labels(data_set)
-            if y is None:
-                continue
-
-            # Keep only nodes that are in both X and y
-            ind = X.index.intersection(y.index)
-            X = X.loc[ind, :]
-            y = y.loc[ind, :]
-            print(y.shape)
-
-            if len(y.shape) > 1 and all(dim > 1 for dim in y.shape):
+            if data_set == "PPI":
                 res = []
-                for _, labels in y.iteritems():
-                    X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, labels, X.index)
-                    y_pred = clf.fit(X_train, y_train).predict(X_test)
-                    res.append([precision_score(y_test, y_pred, average="micro"),
-                        recall_score(y_test, y_pred, average="micro"),
-                        f1_score(y_test, y_pred, average="micro"),
-                        precision_score(y_test, y_pred, average="macro"),
-                        recall_score(y_test, y_pred, average="macro"),
-                        f1_score(y_test, y_pred, average="macro"),
-                        f1_score(y_test, y_pred, average="weighted")])
-                res = pd.DataFrame(res, columns=["Precision (micro)", "Recall (micro)", "F1 (micro)",
-                                          "Precision (macro)", "Recall (macro)", "F1 (macro)",
-                                          "F1-weighted"]).mean(axis=0)
-
+                for i in range(24):
+                    y = read_labels(data_set, i+1)
+                    embedding_file = os.path.join(EMBEDDING_DIR, data_set, "{}_{}_{:02d}.embeddings".format(algo, data_set, i+1))
+                    if not os.path.exists(embedding_file):
+                        continue
+                    res.append(executor(data_set, algo, y, embedding_file))
+                if len(res) == 0:
+                    continue
+                res = pd.DataFrame(res).mean(axis=0)
             else:
-                X_train, X_test, y_train, y_test, ind_train, ind_test = train_test_split(X, y, X.index)
-                y_pred = clf.fit(X_train, y_train).predict(X_test)
-                res = ([precision_score(y_test, y_pred, average="micro"),
-                        recall_score(y_test, y_pred, average="micro"),
-                        f1_score(y_test, y_pred, average="micro"),
-                        precision_score(y_test, y_pred, average="macro"),
-                        recall_score(y_test, y_pred, average="macro"),
-                        f1_score(y_test, y_pred, average="macro"),
-                        f1_score(y_test, y_pred, average="weighted")])
-
+                embedding_file = os.path.join(EMBEDDING_DIR, data_set, "{}_{}.embeddings".format(algo, data_set))
+                if not os.path.exists(embedding_file):
+                    continue
+                y = read_labels(data_set)
+                res = executor(data_set, algo, y, embedding_file)
+                if res is None:
+                    continue
             results[(data_set, algo)] = res
+
     results = pd.DataFrame(results, index=["Precision (micro)", "Recall (micro)", "F1 (micro)",
                                           "Precision (macro)", "Recall (macro)", "F1 (macro)",
                                           "F1-weighted"]).T
-    results_file = os.path.join(ROOT_DIR, "results", "{}_{}_results.html".format(algorithm, dataset))
-    with open(results_file, "w") as f:
-        f.write(results._repr_html_())
+    results_file_html = os.path.join(ROOT_DIR, "results", "{}_{}_results.html".format(algorithm, dataset))
+    results_file_xlsx = os.path.join(ROOT_DIR, "results", "{}_{}_results.xlsx".format(algorithm, dataset))
+    with open(results_file_html, "w") as f:
+        f.write(results.style.apply(highlight_max)._repr_html_())
+    results.style.apply(highlight_max).to_excel(results_file_xlsx)
 
 
 def highlight_max(s):
     '''
     highlight the maximum in a Series yellow.
     '''
-    is_max = s == s.max()
+    is_max = s.groupby(level=0).transform('max') == s
     return ['background-color: yellow' if v else '' for v in is_max]
 
 

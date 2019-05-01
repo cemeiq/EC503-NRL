@@ -29,34 +29,36 @@ def execute(dataset, infile, outfile='.'):
     magic_graph_dir = os.path.join(os.getcwd(), 'magic-graph')
     if not os.path.exists(magic_graph_dir):
         git.Git(".").clone("git://github.com/phanein/magic-graph")
-        os.chdir("magic-graph")
-        setup = subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'python2.7') + ' setup.py install', shell=True)
-        print(setup)
-        os.chdir("..")
+    os.chdir("magic-graph")
+    setup = subprocess.call('"' + os.path.join(venv_dir, 'bin', 'python2.7') + '" setup.py install', shell=True)
+    print(setup)
+    os.chdir("..")
 
     print('\nSetting up harp ...\n')
 
     # pip install the requirements of harp in the virtual environment
     print('\nInstalling requirements of harp ...\n')
     # https://stackoverflow.com/a/17271444/
-    from pip._internal import main as pip
-    pip(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
-    subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'pip2.7') + ' install numpy', shell=True)
-    subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'pip2.7') + ' install six', shell=True)
-    subprocess.call(os.path.join(venv_dir, 'local', 'bin', 'pip2.7') + ' install smart_open', shell=True)
+    # from pip import main as pip
+    # pip(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
+    subprocess.call(os.path.join('"' + venv_dir, 'bin', 'pip2.7') + '" install -r requirements.txt', shell=True)
+    subprocess.call(os.path.join('"' + venv_dir, 'bin', 'pip2.7') + '" install numpy', shell=True)
+    subprocess.call(os.path.join('"' + venv_dir, 'bin', 'pip2.7') + '" install six', shell=True)
+    subprocess.call(os.path.join('"' + venv_dir, 'bin', 'pip2.7') + '" install smart_open', shell=True)
     #pip.main(['install', '--prefix', venv_dir, '-r', 'requirements.txt'])
 
     print('\nRunning HARP using', dataset, '...\n')
-    command = os.path.join(venv_dir, 'local', 'bin', 'python2.7') + ' ' + os.path.join('src', 'harp.py') + ' ' \
+    command = '"' + os.path.join(venv_dir, 'bin', 'python2.7') + '" ' + os.path.join('src', 'harp.py') + ' ' \
             '--format edgelist ' \
             '--input "' + infile + '" ' \
-            '--model line ' \
-            '--sfdp-path ' + os.path.join(os.getcwd() + 'bin' + 'sfdp_linux') + ' ' \
+            '--model deepwalk ' \
+            '--sfdp-path "' + os.path.join(os.getcwd() + 'bin' + 'sfdp_linux') + '" ' \
             '--number-walks 10 ' \
             '--walk-length 40 ' \
             '--workers 1 ' \
-            '--output "' + outfile + '"'
-
+            '--output "' + outfile + '" ' \
+            '--representation-size 128'
+    print(command)
     run = subprocess.call(command, shell=True)
     print(run)
 
