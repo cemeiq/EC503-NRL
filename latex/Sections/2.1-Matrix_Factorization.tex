@@ -1,6 +1,6 @@
 \subsection{Matrix Methods}
 \subsubsection{Multidimensional Scaling (MDS)}
-Multidimensional Scaling (MDS) (see \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has information about distance or dissimilarity among the datapoints. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$, so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
+Multidimensional Scaling (MDS) (\cite{kruskal1964multidimensional}) (see also \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has information about distance or dissimilarity among the datapoints. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$, so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
 
 Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarity matrix. Then:
 \begin{enumerate}
@@ -21,7 +21,7 @@ Classical MDS only works for Euclidean spaces, so in the context of graphs, wher
     \text{Stress}_D(x_1, ... , x_n) = \left(\sum_{i < j = 1, ... ,N}(d_{ij} - ||x_i - x_j||)^2\right)^{1/2}
 \]
 
-This minimization is done through the SMaCoF (scaling by majorization for complicated functions) algorithm ()\cite{de2011applications}). Note that the stress can be written as:
+This minimization is done through the SMaCoF (scaling by majorization for complicated functions) algorithm (\cite{de2011applications}). Note that the stress can be written as:
 
 \[
   \text{Stress}_D(x_1, ... , x_n) = \sum_{i < j} d_{i,j}^2 - 2\sum_{i<j} d_{i,j}||x_i - x_j|| + \sum_{i<j} ||x_i - x_j||^2
