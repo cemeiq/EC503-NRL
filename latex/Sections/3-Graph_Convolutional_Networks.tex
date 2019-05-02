@@ -162,3 +162,40 @@ vertex can quickly fill up a large portion of the graph (\cite{fastgcn}).
 \end{enumerate}
 
 \subsubsection*{GraphSAGE}
+GraphSAGE \cite{inductive} is a technique to embed nodes of large graphs into a
+low-dimensional space, by using a neural network approach.\\
+The key difference between GraphSAGE and the other approaches that we 've seen
+so far, is that instead of learning a representation for every node, GraphSAGE
+learns a function that generates embeddings by sampling and aggregating features
+from node's local neighborhood.\\
+\spara{The embedding algorithm} Algorithm 1~\ref{algo} describes the way
+embeddings are generated. We present the algorithm under the assumption that
+we have learned the parameters of the $K$ aggregator functions, as well as a
+set of weight matrices $W^k$, which are used to propagate features between
+different layers (search depths) of the model. We will describe later how these
+parameters can be learned.
+\begin{figure}[h!tb]
+\includegraphics[scale=0.4]{sageEmbedding}
+\label{algo}
+\end{figure}
+As we see on each iteration $K$, a node aggregates representations of the nodes
+in its immediate neighborhood into a single vector. Then it concatenates this
+vector with its current representation. This new vector is transformed using the weight matrix
+$W^k$ and a non-linear activation function, before being used at the next step
+of the algorithm. In order to keep the computational cost small, the authors
+sample uniformly a fixed-size set of neighbors at each step.\\
+\spara{Learning the parameters} While a different computational graph is
+constructed for every node, the parameters $W^k$, as well the parameters of the
+aggregator functions are shared across those different networks. Hence, we can
+learn those parameters using stochastic gradient descend and back-propagation.
+For an unsupervised setting, we can define a graph-loss function to the output
+representations, while for completely supervised settings we can use different
+loss functions, like the cross-entropy.
+\spara{ Aggregator functions} The authors of this paper also propose a set of
+aggregator functions that can be used by this model. Among them is $mean$, which
+simply takes the average of the representations of neighboring nodes, and
+$pooling$, where each neighbor's vector is independently fed through a
+fully-connected neural network. Following this transformation, an elementwise
+max-pooling operation is applied to aggregate information across the neighbor
+set.
+
