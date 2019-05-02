@@ -22,8 +22,38 @@ others for all algorithms. Even a single algorithm is usually highly customizabl
 parameter choices whose optimums change depending on the input graph.
 
 
+\spara{Graph Neural Network results}
+Table \ref{table:2} is presenting the result of running the $3$ neural network
+architectures proposed in Section  3. Namely, we use the \cite{kipf2017semi}
+architecture to perform classification in a semi-supervised manners, using the
+Chebyshev polynomial filters proposed by \cite{defferrard2016convolutional} for
+different values of $K$, the $1^st$ approximation used in this paper. Also, we
+compare against the supervised version of GraphSAGE. As we see, the
+simplification proposed by \cite{kipf2017semi} seems to outperform the original
+Chebyshev filters. GraphSAGE achieves the best accuracy results, however, it
+uses only labeled training points.
+\begin{table}[h!]
+\centering
+\caption{Prediction results for 3 citation datasets (average classification accuracy)}
+\begin{tabular}{ |p{2cm}||p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
+ \hline
+ &\multicolumn{3}{c}{\textbf{Order of Chebyshev's Polynomial}} &&\\
+ \hline
+ &K=1& K=2 &K=3 &GCN & GraphSAGE\\
+ \hline\hline
+ Cora   & 0.7990    &0.84362 &0.793 &0.809 &\textbf{0.849}\\
+ citeseer &   0.702  & 0.692 &0.68 &\textbf{0.715}& --- \\
+ pubmed &0.71480 & 0.713 &0.74 &0.792 &\textbf{0.837}\\
+ \hline
+\end{tabular}\\
+\label{table:2}
+\end{table}
 
-Table \ref{table:1} is \dots
+Table \ref{table:1} is performing supervised and unsupervised tasks on the PPI
+dataset, using 2 different aggregation functions of GraphSAGE ($mean$ and
+$max$). We also used an aggregation function that mimicks the convolutional
+network of \cite{kipf2017semi}. As we see, graphSAGE outperforms this approach
+on the PPI dataset, as well as the DeepWalk embedding technique.
 \begin{table}[h!]
 \centering
 \caption{Prediction results for PPI dataset (micro-averaged F1 scores). \newline}
@@ -42,20 +72,3 @@ Table \ref{table:1} is \dots
 \label{table:1}
 \end{table}
 
-Table \ref{table:2} is \dots
-\begin{table}[h!]
-\centering
-\caption{}
-\begin{tabular}{ |p{2cm}||p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
- \hline
- &\multicolumn{3}{c}{\textbf{Order of Chebyshev's Polynomial}} &&\\
- \hline
- &K=1& K=2 &K=3 &GCN & GraphSAGE\\
- \hline\hline
- Cora   & 0.7990    &0.84362 &0.793 &0.809 &\textbf{0.849}\\
- citeseer &   0.702  & 0.692 &0.68 &\textbf{0.715}& --- \\
- pubmed &0.71480 & 0.713 &0.74 &0.792 &\textbf{0.837}\\
- \hline
-\end{tabular}\\
-\label{table:2}
-\end{table}

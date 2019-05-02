@@ -32,3 +32,5 @@ Interaction network. Each node in this network corresponds to a protein and and 
 two proteins if an interaction between them has been recorded. There are 24 disconnected graphs
 correcsponding to different human tissues.  The labels come from gene ontology (121)
 from~\cite{subramanian2005gene}. The average graph has 2360 nodes and average degree 14.4.
+
+{\bf \href{https://github.com/tkipf/gcn/tree/master/gcn/data}{Citeseer, Pubmed, Cora}~\cite{kipf2016semi}}: We also consider three citation network datasets: Citeseer, Cora and Pubmed (Sen et al., 2008). The datasets contain sparse bag-of-words feature vectors for each document and a list of citation links between documents. We treat the citation links as (undirected) edges and construct a binary, symmetric adjacency matrix A. Each document has a class label. For training, we only use 20 labels per class, but all feature vectors.
