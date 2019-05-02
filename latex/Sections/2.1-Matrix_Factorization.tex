@@ -1,5 +1,7 @@
 \subsection{Matrix Methods}
-\subsubsection{Multidimensional Scaling (MDS)}
+In this section, we consider methods that construct Euclidean embeddings by approximating matrices. In order to make sense of graph data, we consider matrices that encode the structural properties of the underlying network. In Section \ref{MDS} we describe a method to embed graphs into Euclidean space starting from its shortest path matrix, while in Section \ref{Spectral-Emb} the matrix in question will be the normalized Laplacian matrix of the graph.
+
+\subsubsection{Multidimensional Scaling (MDS)}\label{MDS}
 Multidimensional Scaling (MDS) (\cite{kruskal1964multidimensional}) (see also \cite{cox2000multidimensional} and \cite{borg2003modern}) is a method for creating a Euclidean embedding of data for which one has information about distance or dissimilarity among the datapoints. For instance, given an $N \times N$ matrix of distances between $N$ points, one can embed the points into $\mathbb{R}^k$, so as to preserve distance information. In particular, one can use MDS as a way to create useful features for graphs by considering the shortest path distance between vertices. MDS is similar to PCA, except instead of using correlation information, we make use of pointwise distances.
 
 Classical Multidimensional Scaling works as follows: let $D$ be the dissimilarity matrix. Then:
@@ -55,19 +57,28 @@ where:
 \[
   \tau(X,Z) := \sum_{i,j}d_{i,j}^2 + \text{tr}(X^T V X) - 2 \text{tr}(X^TB(Z)Z)
 \]
+MDS on Graphs is also used as the core component of Isomap, a popular method for manifold learning.
 
-\subsubsection{Spectral Embedding}
+\subsubsection{Spectral Embedding}\label{Spectral-Emb}
 Another way to embed a graph in Euclidean space is given by the spectral embedding. This method computes the $k$ eigenvectors of the normalized Laplacian matrix $\mathcal{L}$  corresponding to the $k$ smallest eigenvalues, and uses each of them as an embedding of the  vertices into $\mathbb{R}$, resulting in an  embedding into $\mathbb{R}^k$. The normalized Laplacian matrix is given by:
 \[
     \mathcal{L} = D^{-{1\over 2}}(D - A)D^{-{1\over 2}}
 \]
 
 Where $D$ is the $n \times n$ diagonal matrix of degrees of vertices and $A$ is the graph adjacency matrix. One can prove that the quadratic form of the Laplacian is a relaxation to the minimum conductance cut problem (see for instance \cite{chung1997spectral}) defined as follows:
-
 \[
     \underset{S  \subseteq V }{\text{minimize}} {|E(S,\overline{S})|\over \min\{vol(S), vol(\overline{S})\}}.
 \]
-The eigenvectors of the Laplacian therefore act as optimizers of the relaxation, and tend to align points in space so as to keep connected points close to each other. Note that eigenvectors of the normalized Laplacian are solutions to the generalized eigenvalue problem:
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.75]{figures/conductance.eps}
+\caption{Minimum Conductance Cut attempts to find a sparse cut in the graph.}
+\end{figure}
+where, for any $S \subseteq V$, the volume $vol(S)$ of $S$ is the sum of the degrees of all the vertices in $S$. The above optimization problem looks for a cut in the graph that simultaneously cuts few edge, while disconnecting a large portion of the graph (where \emph{large} is measured by the volume). The eigenvectors of the Laplacian act as optimizers of the relaxation, and therefore tend to align points in space so as to keep connected points close to each other, while still find inducing meaningful separation among the datapoints. Note that eigenvectors of the normalized Laplacian are solutions to the generalized eigenvalue problem:
+\[
+    \underset{x \in \mathbb{R}^n}{\text{minimize}}\hspace{1.5mm}{x^TLx \over x^TDx}
+\]
+or alternatively:
 \[
     L\mathbf{x} = \lambda D\mathbf{x}
 \]
