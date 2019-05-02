@@ -15,7 +15,7 @@ as CNNs were mainly used for image classification, they assume that
 data lie on a regular grid in a geometric space (most commonly
 Euclidean). On the contrary, graph data are a typical form of unordered data that lie in
 an irregular domain. Also, the heavy-tailed distribution of node degrees
-in real networks (\cite{faloutsos1999powerlaw}) makes the filtering-convolution part difficult,
+in real networks (\cite{faloutsos1999power}) makes the filtering-convolution part difficult,
 as it is not easy to define a constant-sized neighborhood and apply a
 localized filter, as in the traditional CNN case. Similarly, one needs to find an analogue of the pooling stage.\\
 
@@ -162,7 +162,7 @@ vertex can quickly fill up a large portion of the graph (\cite{chen2018fastgcn})
 \end{enumerate}
 
 \subsubsection*{GraphSAGE}
-GraphSAGE (\cite{inductive}) is a technique to embed nodes of large graphs into a
+GraphSAGE (\cite{hamilton2017inductive}) is a technique to embed nodes of large graphs into a
 low-dimensional space, by using a neural network approach.\\
 The key difference between GraphSAGE and the other approaches that we 've seen
 so far, is that instead of learning a representation for every node, GraphSAGE
