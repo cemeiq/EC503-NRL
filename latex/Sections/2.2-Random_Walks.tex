@@ -15,51 +15,51 @@ by applying an approach that was introduced for learning word embeddings.
 
 DeepWalk is an algorithm that takes a graph as an input, and learns a latent
 representation of the nodes. This representation is a vector with continuous
-values that aims to capture the social similarity between the nodes while having 
-a low dimension. In order to learn this representation, DeepWalk uses random 
-walks and assumes that these walks can capture well the similarity between 
-nodes. First, it samples a node $v_i$ uniformly at random, from the set of nodes 
-$V$, as the root of the random walk $W_{v_i}$. Then, it repeatedly samples 
-a neighbor of the current node uniformly at random, until the walk reaches a 
-specific length. DeepWalk produces $\gamma$ such random 
-walks, and then adapts the word2vec approach, which is an approach for obtaining 
-word embeddings, by treating the random walks as sentences, and the nodes as 
+values that aims to capture the social similarity between the nodes while having
+a low dimension. In order to learn this representation, DeepWalk uses random
+walks and assumes that these walks can capture well the similarity between
+nodes. First, it samples a node $v_i$ uniformly at random, from the set of nodes
+$V$, as the root of the random walk $W_{v_i}$. Then, it repeatedly samples
+a neighbor of the current node uniformly at random, until the walk reaches a
+specific length. DeepWalk produces $\gamma$ such random
+walks, and then adapts the word2vec approach, which is an approach for obtaining
+word embeddings, by treating the random walks as sentences, and the nodes as
 words.
 
-The \emph{word2vec} method, introduced in \cite{mikolov2013efficient}, embeds 
-words of a corpus in a subspace $\mathbb{R}^d$, so that each word embedding can 
-be used to predict the context around this word, i.e. the `nearby' words (within 
-a window $w$) in a sentence. In particular, for every word in the vocabulary we 
-want to calculate its probability of being within a window $w$ from the current 
-word (Skip-gram method). 
-In order to do that, Skip-gram parses a given corpus and creates pairs of words 
-$(w_i, w_j)$ to specify that $w_j$ is within a window $w$ from the word $w_i$. 
-There is an underlying assumption that the words that are `close' in a 
-sentence, correspond to the same context. These pairs $(w_i, w_j)$ can then be 
-used as a training set, to train a model (for example a neural network) to 
-predict the `nearby' words with high probability from a given word, based on the 
-training set, i.e. to maximize the likelihood of the training set. These words 
-are internally represented in a subspace $R^d$. Therefore, the key idea is that 
+The \emph{word2vec} method, introduced in \cite{mikolov2013efficient}, embeds
+words of a corpus in a subspace $\mathbb{R}^d$, so that each word embedding can
+be used to predict the context around this word, i.e. the `nearby' words (within
+a window $w$) in a sentence. In particular, for every word in the vocabulary we
+want to calculate its probability of being within a window $w$ from the current
+word (Skip-gram method).
+In order to do that, Skip-gram parses a given corpus and creates pairs of words
+$(w_i, w_j)$ to specify that $w_j$ is within a window $w$ from the word $w_i$.
+There is an underlying assumption that the words that are `close' in a
+sentence, correspond to the same context. These pairs $(w_i, w_j)$ can then be
+used as a training set, to train a model (for example a neural network) to
+predict the `nearby' words with high probability from a given word, based on the
+training set, i.e. to maximize the likelihood of the training set. These words
+are internally represented in a subspace $R^d$. Therefore, the key idea is that
 the training of this model yields an embedding for each word in $\mathbb{R}^d$.
 Using this embedding we can represent each word as a vector with dimension $d$
-which captures the context similarity based on a training set instead of using 
-an one-hot vector of dimension equal to the size of the vocabulary. The parameter 
+which captures the context similarity based on a training set instead of using
+an one-hot vector of dimension equal to the size of the vocabulary. The parameter
 $d$ is set by the user and it can be tuned using a validation set.
 
-DeepWalk adapts the idea of word embeddings to network graphs by treating the 
-nodes as words and the random walks as sentences. Similarly to the word 
-embeddings, the goal is for the embeddings to capture node similarity so that 
-they can then be used for classifying them. There is no rigorous justification 
-about why random walks can capture the information of community-similar nodes of 
-a social network graph. However, the authors observe that the word frequencies in 
-some corpora, such as the English Wikipedia, follows a power-law distribution, 
-which is also the case for the degree of nodes in social networks. That 
-observation possibly makes the random walks suitable for capturing the 
+DeepWalk adapts the idea of word embeddings to network graphs by treating the
+nodes as words and the random walks as sentences. Similarly to the word
+embeddings, the goal is for the embeddings to capture node similarity so that
+they can then be used for classifying them. There is no rigorous justification
+about why random walks can capture the information of community-similar nodes of
+a social network graph. However, the authors observe that the word frequencies in
+some corpora, such as the English Wikipedia, follows a power-law distribution,
+which is also the case for the degree of nodes in social networks. That
+observation possibly makes the random walks suitable for capturing the
 neighborhood similarity or community membership in the social network graphs.
 
-DeepWalk first initializes a mapping 
-$\Phi: V \to \mathbb{R}^{\mid V\mid \times d}$ which maps each node to an 
-embedding of dimension $d$. Then, the objective is to solve the following 
+DeepWalk first initializes a mapping
+$\Phi: V \to \mathbb{R}^{\mid V\mid \times d}$ which maps each node to an
+embedding of dimension $d$. Then, the objective is to solve the following
 optimization problem:
 \begin{align}
     \min_{\Phi}
@@ -68,21 +68,21 @@ optimization problem:
                 \ldots , v_{i+w}} \mid \Phi(v_i))}
         \right )
 \end{align}
-where $v_i$ is the node currently examined in the random walk $W_{v_i}$, 
-$\Phi(v_i)$ is the embedding of this node from which we want to predict the 
-nearby nodes and $v_{i-w}, \ldots, v_{i-1}, v_{i+1}, \ldots, v_{i+w}$ are the 
-nearby nodes (within a window $w$ from the node $v_i$) in this walk. 
-$\Phi$ is updated using gradient descent. In the end, DeepWalk outputs the 
+where $v_i$ is the node currently examined in the random walk $W_{v_i}$,
+$\Phi(v_i)$ is the embedding of this node from which we want to predict the
+nearby nodes and $v_{i-w}, \ldots, v_{i-1}, v_{i+1}, \ldots, v_{i+w}$ are the
+nearby nodes (within a window $w$ from the node $v_i$) in this walk.
+$\Phi$ is updated using gradient descent. In the end, DeepWalk outputs the
 matrix $\Phi$, which corresponds to the final node embedding.
 
 \subsubsection{Node2vec}
 
 Similarly to DeepWalk, \emph{Node2vec} (\cite{grover2016node2vec}) is a method
 for learning latent representations of the nodes by using random walks and the
-skip-gram. However, this method uses a different way of deciding the next node 
-to be sampled during a random walk. The reason is that there are graphs that 
-exhibit in order to handle graphs that have 
-structural equivalent nodes differently than the ones that include nodes 
+skip-gram. However, this method uses a different way of deciding the next node
+to be sampled during a random walk. The reason is that there are graphs that
+exhibit in order to handle graphs that have
+structural equivalent nodes differently than the ones that include nodes
 highly connected which exhibit community similarity.
 
 Node2vec introduces two baselines cases for sampling neighbor nodes: the
@@ -90,11 +90,11 @@ Breadth-first Sampling (BFS) and the Depth-first Sampling (DFS).
 The Breadth-first strategy samples a neighborhood for a node $v_i$ by
 considering as neighbors, the nodes that have an immediate edge to $v_i$.
 In contrast, Depth-first strategy considers as neighbors the nodes that are
-one more edge away from $v_i$ each time we sample for one more node in the 
-neighborhood. As an example, consider the node $u$ in 
-Fig~\ref{sampling_strategies} (obtained by the original 
-paper~\cite{grover2016node2vec}). Sampling a neighborhood of size 3 using the 
-BFS strategy can give us the nodes $s_1, s_2, s_3$, while sampling using the DFS 
+one more edge away from $v_i$ each time we sample for one more node in the
+neighborhood. As an example, consider the node $u$ in
+Fig~\ref{sampling_strategies} (obtained by the original
+paper~\cite{grover2016node2vec}). Sampling a neighborhood of size 3 using the
+BFS strategy can give us the nodes $s_1, s_2, s_3$, while sampling using the DFS
 strategy can give us the nodes $s_4, s_5, s_6$.
 \begin{figure}
 \begin{center}
@@ -102,7 +102,7 @@ strategy can give us the nodes $s_4, s_5, s_6$.
 \end{center}
 \caption{Using the BFS sampling strategy, we can obtain the nodes
 $s_1, s_2, s_3$ as the 3 neighbors of $u$. Using the DFS sampling strategy we
-can obtain $\{s_4, s_5, s_6\}$ as a neighborhood of size 3. The figure is copied 
+can obtain $\{s_4, s_5, s_6\}$ as a neighborhood of size 3. The figure is copied
 from the original paper~\cite{grover2016node2vec}.}
 \label{sampling_strategies}
 \end{figure}
@@ -114,17 +114,17 @@ On the contrary, the DFS strategy samples nodes in a way that explores
 neighborhoods of nodes that exhibit \emph{homophily}, which means that nodes
 highly connected belong to similar clusters or communities.
 
-Real-world graph networks include both structural similar nodes and as well as 
-homophilous nodes that exhibit community similarities by being highy connected. 
-The node2vec approach can capture both similarities by introducing the parameters 
-$p$ and $q$. The return parameter $p$ controls the likelihood of returning back 
-to the previous node in the walk. The parameter $q$ controls the decision 
-between a BFS and a DFS sampling strategy. If $q$ is set to be less than 1 
-then the walk is more biased to choose nodes that are further from the current 
-node in the walk. If $q$ is chosen to be more than 1, then the walk would choose 
-nodes that are close to the current node with higher probability, following a 
-strategy closer to the BFS strategy. Formally, the algorithm uses the transition 
-probabilities $\pi$ to sample the next node in the walk. For example, the 
+Real-world graph networks include both structural similar nodes and as well as
+homophilous nodes that exhibit community similarities by being highy connected.
+The node2vec approach can capture both similarities by introducing the parameters
+$p$ and $q$. The return parameter $p$ controls the likelihood of returning back
+to the previous node in the walk. The parameter $q$ controls the decision
+between a BFS and a DFS sampling strategy. If $q$ is set to be less than 1
+then the walk is more biased to choose nodes that are further from the current
+node in the walk. If $q$ is chosen to be more than 1, then the walk would choose
+nodes that are close to the current node with higher probability, following a
+strategy closer to the BFS strategy. Formally, the algorithm uses the transition
+probabilities $\pi$ to sample the next node in the walk. For example, the
 transition probabilities for sampling the node $x$ when being in the node $u$ are:
 \begin{align}
 \pi_{ux} = \begin{cases} \frac{1}{p}\cdot w_{ux} & \text{ if } d_{tx} = 0 \\
@@ -148,29 +148,28 @@ paper~\cite{grover2016node2vec}.}
 
 \subsubsection{LINE}
 
-LINE (\cite{DBLP:journals/corr/TangQWZYM15}) is a network embedding model, able to handle very large, arbitrary types of graph networks $G=(V,E)$, (undirected, directed and/or weighted), by optimizing an objective which preserves both local and global network structures. Local structures are represented by the observed links in the networks, as for each pair of vertices linked by edge $(u, v)$, the weight $w_{uv}$ on that edge indicates the first-order proximity between u and v. Global structure is the second-order proximity between the vertices, determined through the shared neighborhood structures, as nodes with shared neighbors are likely to be similar. If $p_u = (w_{u,1}; \dots ;w_{u,|V|})$ denotes the first-order proximity of u with all the other vertices, then the second-order proximity between u and v is the similarity between $p_u$ and $p_v$.
+LINE (\cite{DBLP:journals/corr/TangQWZYM15}) is a network embedding model, able to handle very large, arbitrary types of graphs (undirected, directed and/or weighted), by optimizing an objective which preserves both local and global network structures. Local structures are represented by the observed links in the networks, since for each pair of vertices linked by edge $(u, v)$, the weight $w_{uv}$ on that edge indicates the first-order proximity between $u$ and $v$. Global structure is the second-order proximity between the vertices, determined through the shared neighborhood structures. This corresponds to the intuitive notion that nodes with shared neighbors are likely to be similar. If $p_u = (w_{u,1}; \dots ;w_{u,|V|})$ denotes the first-order proximity of $u$ with all the other vertices, then the second-order proximity between $u$ and $v$ is the similarity between $p_u$ and $p_v$.
 
 In both cases, an objective function is defined and optimized, and the difference in the variants of the model that are described lies on whether first- or second-order proximity (or both) is used, and on the method selected for optimizing this objective in each case. Using first-order proximity, the KL-divergence between the joint and the empirical distribution of vertices $v_i$ and $v_j$ for each undirected edge $(i,j)$ is minimized. On the other hand, using second-order proximity, $u_i'$ is defined as the representation of $v_i$, when it is treated as a specific "context", and $u_i$ as the representation of $v_i$ when it is treated as a vertex. In this case, the KL-divergence between the conditional and the empirical distribution over the contexts is minimized.
 
 A negative sampling approach tackles the problem of trivial infinity solutions in the case of first-order proximity and that of the computationally expensive minimization of the objective in the case of second-order proximity. Multiple negative edges are sampled according to some noisy distribution for each edge $(i,j)$, and asynchronous Stochastic Gradient Descent algorithm is used, which, in each step, samples a mini-batch of edges and updates the model parameters.
 When edge weights have a high variance, scales of the gradients in SGD diverge, making it harder to find a good learning rate. Optimization via edge-sampling is then applied, by sampling from the original edges, with sampling probabilities proportional to the original edge weights. Sampled edges are treated as binary edges.
 
-To combine first- and second-order proximity, a simple way is to concatenate the vector representations learned by both into a longer vector, and reweigh the dimensions, to balance the two representations. It was found that in practice, optimization takes $O(|E|)$ time, and the overall complexity of LINE is $O(d(K+1))$, given that K is the number of negative samples and $d<<|V|$ the dimension of the lower-dimensional space.
+A simple way to combine first- and second-order proximity information, is to concatenate the vector representations learned by both approaches into a longer vector, and reweigh the dimensions to balance the two representations. It was found that in practice, optimization takes $O(|E|)$ time, and the overall complexity of LINE is $O(d(K+1))$, given that $K$ is the number of negative samples and $d<<|V|$ the dimension of the lower-dimensional space.
 
 As a way to better combine first- and second-order proximities, the authors propose to jointly train the objective function in the future. Also, they suggest that higher-order proximity approaches could be applied to provide a better result. Another objective could be to find new embeddings of heterogeneous information networks, meaning graphs with vertices of multiple types. Furthermore, the case of no observed connections between new and existing vertices could be explored in the future by resorting to other network information, such as the textual information of the vertices.
 
 \subsubsection{HARP}
 
-HARP (\cite{DBLP:journals/corr/ChenPHS17}) is a meta strategy which solves the graph representation learning problem using a hierarchical approach.
-All methods described before could easily get stuck at a bad local minima as the result of poor initialization of the non-convex optimization. Moreover,these methods mostly aim to preserve local proximities in a graph but neglect its global structure.
+HARP (\cite{DBLP:journals/corr/ChenPHS17}) is a meta-strategy which solves the graph representation learning problem using a hierarchical approach. All of the method previously described in this section often get stuck at a bad local minimum as the result of poor initialization of the non-convex optimization. Moreover, these methods mostly aim to preserve local proximities in a graph but neglect its global structure.
 
 HARP recursively coalesces the nodes and edges in the original graph to get a series of successively smaller but structurally similar graphs . These coalesced graphs, each with a different granularity, provide a view of the original graph’s global structure. Starting from the most simplified form, each graph is used to learn a set of initial representations which serve as good initializations for embedding the next, more detailed graph. This process is repeated until we get an embedding for each node in the original graph.
 
 HARP's method for multi-level graph representation learning consists of three parts:
 \begin{itemize}
-    \item \textbf{Graph Coarsening:} starting from the original graph, $G = G_0$, a hierarchy of successively smaller graphs $G_0, G_1, \dots , G_L$ is created. A hybrid graph coarsening scheme is developed, which is repeatedly applied to obtain a small graph. It combines two algorithms, edge collapsing and star collapsing, preserving first- and second-order proximity respectively. Edge collapsing is an edge selection and node merging algorithm, which arbitrarily merges nodes of edges into single nodes, providing a graph with at least half the edges of the original one. Star collapsing algorithm, on the other hand, considers star-like structured graphs, and merges nodes with the same neighbors into supernodes.
-    \item \textbf{Graph Embedding:}  Using a provided Graph Embedding algorithm, Graph Embedding is obtained on the Coarsest Graph $G_L$, a small sized graph providing a high quality representation.
-    \item \textbf{Representation Prolongation and Refinement:} For each graph $G_i$, the graph representation of $G_{i+1}$ is prolonged and taken as its initial embedding, $\Phi'_{G_i}$, followed by applying a provided embedding algorithm to $(G_i, \Phi'_{G_i})$ to further refine $\Phi'_{G_i}$ and obtain refined embedding $\Phi_{G_i}$.
+\item \textbf{Graph Coarsening:} starting from the original graph, $G = G_0$, a hierarchy of successively smaller graphs $G_0, G_1, \dots , G_L$ is created. A hybrid graph coarsening scheme is developed, which is repeatedly applied to obtain a small graph. It combines two algorithms, edge collapsing and star collapsing, preserving first- and second-order proximity respectively. Edge collapsing is an edge selection and node merging algorithm, which arbitrarily merges nodes of edges into single nodes, constructing a graph with at least half the edges of the original one. Star collapsing algorithm, on the other hand, considers star-like structured graphs, and merges nodes with the same neighbors into supernodes.
+     \item \textbf{Graph Embedding:}  Using a provided Graph Embedding algorithm, Graph Embedding is obtained on the Coarsest Graph $G_L$, a small sized graph providing a high quality representation.
+     \item \textbf{Representation Prolongation and Refinement:} For each graph $G_i$, the graph representation of $G_{i+1}$ is prolonged and taken as its initial embedding, $\Phi'_{G_i}$, followed by applying a provided embedding algorithm to $(G_i, \Phi'_{G_i})$ to further refine $\Phi'_{G_i}$ and obtain refined embedding $\Phi_{G_i}$.
 \end{itemize}
 
 Processes of Graph Embedding, Prolongation and Refinement are then applied recursively to the larger graphs and their embeddings, until we obtain the graph embedding of the original graph, $\Phi'_{G_0}$.
