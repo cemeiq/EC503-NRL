@@ -7,8 +7,7 @@ for sampling large graphs of social networks.
 At a high level, a random walk in a graph is a sequence of nodes. This sequence
 can be thought of as a sentence where each `node' is a `word'. Therefore, this
 analogy lets us directly use techniques of word embeddings, for obtaining
-embeddings of the nodes. In the next two sections, we introduce
-two algorithms that use random walks to learn embeddings of the nodes
+embeddings of the nodes. In the next two sections, we introduce methods that use random walks to learn embeddings of the nodes
 by applying an approach that was introduced for learning word embeddings.
 
 \subsubsection{DeepWalk}
@@ -16,7 +15,7 @@ by applying an approach that was introduced for learning word embeddings.
 DeepWalk is an algorithm that takes a graph as an input, and learns a latent
 representation of the nodes. This representation is a vector with continuous
 values that aims to capture the social similarity between the nodes while having
-a low dimension. In order to learn this representation, DeepWalk uses random
+a lower dimension. In order to learn this representation, DeepWalk uses random
 walks and assumes that these walks can capture well the similarity between
 nodes. First, it samples a node $v_i$ uniformly at random, from the set of nodes
 $V$, as the root of the random walk $W_{v_i}$. Then, it repeatedly samples
@@ -44,17 +43,15 @@ the training of this model yields an embedding for each word in $\mathbb{R}^d$.
 Using this embedding we can represent each word as a vector with dimension $d$
 which captures the context similarity based on a training set instead of using
 an one-hot vector of dimension equal to the size of the vocabulary. The parameter
-$d$ is set by the user and it can be tuned using a validation set.
+$d$ is set by the user, and it can be tuned in the validation stage.
 
 DeepWalk adapts the idea of word embeddings to network graphs by treating the
 nodes as words and the random walks as sentences. Similarly to the word
 embeddings, the goal is for the embeddings to capture node similarity so that
-they can then be used for classifying them. There is no rigorous justification
-about why random walks can capture the information of community-similar nodes of
-a social network graph. However, the authors observe that the word frequencies in
-some corpora, such as the English Wikipedia, follows a power-law distribution,
+they can then be used to classify them. While there is no formal argument that random walks can capture the information of community-similar nodes in a graph, the authors observe that the word frequencies in
+some corpora, such as the English Wikipedia, follow a power-law distribution,
 which is also the case for the degree of nodes in social networks. That
-observation possibly makes the random walks suitable for capturing the
+observation suggests that the random walks might be suitable for capturing the
 neighborhood similarity or community membership in the social network graphs.
 
 DeepWalk first initializes a mapping
@@ -85,10 +82,10 @@ exhibit in order to handle graphs that have
 structural equivalent nodes differently than the ones that include nodes
 highly connected which exhibit community similarity.
 
-Node2vec introduces two baselines cases for sampling neighbor nodes: the
+Node2vec introduces two baseline techniques for sampling neighbor nodes: the
 Breadth-first Sampling (BFS) and the Depth-first Sampling (DFS).
-The Breadth-first strategy samples a neighborhood for a node $v_i$ by
-considering as neighbors, the nodes that have an immediate edge to $v_i$.
+The Breadth-first strategy samples a set of node from the direct neighbors of a node $v_i$,
+considering only the nodes directly connected to $v_i$ via an edge.
 In contrast, Depth-first strategy considers as neighbors the nodes that are
 one more edge away from $v_i$ each time we sample for one more node in the
 neighborhood. As an example, consider the node $u$ in
@@ -106,17 +103,17 @@ can obtain $\{s_4, s_5, s_6\}$ as a neighborhood of size 3. The figure is copied
 from the original paper~\cite{grover2016node2vec}.}
 \label{sampling_strategies}
 \end{figure}
-The DFS strategy samples nodes in a way that explores neighborhoods of nodes. 
-Thus, it can find nodes that are structurally equivalent. For example, consider 
-a network graph with nodes that correspond to hubs or bridges. In this case the 
+The DFS strategy samples nodes in a way that explores neighborhoods of nodes.
+Thus, it can find nodes that are structurally equivalent. For example, consider
+a network graph with nodes that correspond to hubs or bridges. In this case the
 embedding will reflect the structural equivalence of the nodes of the graph.
-On the contrary, the BFS strategy can create random walks consisting of nearby 
-nodes that are highly connected. This means that the nodes belong to similar 
+On the contrary, the BFS strategy can create random walks consisting of nearby
+nodes that are highly connected. This means that the nodes belong to similar
 clusters or communities and exhibit \emph{homophily}.
 
-Real-world graph networks include both structural similar nodes and as well as
+Real-world graph networks include both structurally similar nodes and
 homophilous nodes that exhibit community similarities by being highly connected.
-The node2vec approach can capture both similarities by introducing the parameters
+The node2vec approach can capture both similarities by introducing two parameters:
 $p$ and $q$. The return parameter $p$ controls the likelihood of returning back
 to the previous node in the walk. The parameter $q$ controls the decision
 between a BFS and a DFS sampling strategy. If $q$ is set to be less than 1
