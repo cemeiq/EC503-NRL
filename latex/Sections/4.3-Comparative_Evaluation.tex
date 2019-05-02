@@ -24,12 +24,12 @@ parameter choices whose optimums change depending on the input graph.
 
 \spara{Graph Neural Network results}
 Table \ref{table:2} is presenting the result of running the $3$ neural network
-architectures proposed in Section  3. Namely, we use the \cite{kipf2017semi}
+architectures proposed in Section  3. Namely, we use the \cite{kipf2016semi}
 architecture to perform classification in a semi-supervised manners, using the
 Chebyshev polynomial filters proposed by \cite{defferrard2016convolutional} for
 different values of $K$, the $1^st$ approximation used in this paper. Also, we
 compare against the supervised version of GraphSAGE. As we see, the
-simplification proposed by \cite{kipf2017semi} seems to outperform the original
+simplification proposed by \cite{kipf2016semi} seems to outperform the original
 Chebyshev filters. GraphSAGE achieves the best accuracy results, however, it
 uses only labeled training points.
 \begin{table}[h!]
@@ -52,7 +52,7 @@ uses only labeled training points.
 Table \ref{table:1} is performing supervised and unsupervised tasks on the PPI
 dataset, using 2 different aggregation functions of GraphSAGE ($mean$ and
 $max$). We also used an aggregation function that mimicks the convolutional
-network of \cite{kipf2017semi}. As we see, graphSAGE outperforms this approach
+network of \cite{kipf2016semi}. As we see, graphSAGE outperforms this approach
 on the PPI dataset, as well as the DeepWalk embedding technique.
 \begin{table}[h!]
 \centering
