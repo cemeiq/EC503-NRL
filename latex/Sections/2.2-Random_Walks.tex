@@ -106,16 +106,16 @@ can obtain $\{s_4, s_5, s_6\}$ as a neighborhood of size 3. The figure is copied
 from the original paper~\cite{grover2016node2vec}.}
 \label{sampling_strategies}
 \end{figure}
-The BFS strategy creates random walks that can capture the structural similarities
-between nodes. For example, consider a network graphs with nodes that correspond
-to hubs or bridges. In this case the embedding will reflect the structural
-equivalence of the nodes of the graph.
-On the contrary, the DFS strategy samples nodes in a way that explores
-neighborhoods of nodes that exhibit \emph{homophily}, which means that nodes
-highly connected belong to similar clusters or communities.
+The DFS strategy samples nodes in a way that explores neighborhoods of nodes. 
+Thus, it can find nodes that are structurally equivalent. For example, consider 
+a network graph with nodes that correspond to hubs or bridges. In this case the 
+embedding will reflect the structural equivalence of the nodes of the graph.
+On the contrary, the BFS strategy can create random walks consisting of nearby 
+nodes that are highly connected. This means that the nodes belong to similar 
+clusters or communities and exhibit \emph{homophily}.
 
 Real-world graph networks include both structural similar nodes and as well as
-homophilous nodes that exhibit community similarities by being highy connected.
+homophilous nodes that exhibit community similarities by being highly connected.
 The node2vec approach can capture both similarities by introducing the parameters
 $p$ and $q$. The return parameter $p$ controls the likelihood of returning back
 to the previous node in the walk. The parameter $q$ controls the decision
