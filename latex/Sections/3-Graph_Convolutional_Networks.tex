@@ -1,11 +1,11 @@
 \section{Graph Convolutional Networks}
 
-The recent popularity of convolutional neural networks (\cite{40k}), and their
-success in classifying images and in other tasks with a striking accuracy, has intrigued the scientific
+The recent popularity of convolutional neural networks \cite{krizhevsky2012imagenet}, and their
+success in classifying images with a striking accuracy, has intrigued the scientific
 community with the question of whether -at least a variant of them- can be leveraged in learning tasks
 of graph networked data. The use of graph structures in computer
-vision (\cite{survey}), as well as in the representation of social networks
-(\cite{kleinberg_book}), has made this task look appealing and worth of investigation.
+vision \cite{shokoufandeh2000graph}, as well as in the representation of social networks
+\cite{easley2010networks}, has made this task look appealing and worth of investigation.
 However, using convolutional neural networks for
 networked data directly is not a straightforward task and it poses significant
 challenges.\\
@@ -15,13 +15,13 @@ as CNNs were mainly used for image classification, they assume that
 data lie on a regular grid in a geometric space (most commonly
 Euclidean). On the contrary, graph data are a typical form of unordered data that lie in
 an irregular domain. Also, the heavy-tailed distribution of node degrees
-in real networks \cite{smth} makes the filtering-convolution part difficult,
+in real networks \cite{faloutsos1999powerlaw} makes the filtering-convolution part difficult,
 as it is not easy to define a constant-sized neighborhood and apply a
 localized filter, as in the traditional CNN case. Similarly, one needs to find an analogue of the pooling stage.\\
 
-\spara{Convolution in graphs} First efforts to address the above mentioned issues
-by Bruna et al. \cite{Lecun} and introduce the architecture of CNNs to networked data,
-mainly draw from the field of Graph Signal Processing \cite{shuman}.
+\spara{Convolution in graphs} Bruna et al. \cite{bruna2013spectral} were the first
+trying to introduce the architecture of CNNs to networked data,
+mainly leveraging from the field of Graph Signal Processing \cite{shuman2012emerging}.
 Graphs are generally considered undirected and their representation is given
 through their \textbf{Laplacian $L = D -A$} or more commonly the normalized
 \textbf{Laplacian $L = I_n - D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$}. As this matrix
@@ -50,7 +50,7 @@ multiplication with the Fourier basis $U$.
 \end{itemize}
 
 \subsubsection*{Spectral CNN using Chebyshev Polynomials}
-Deferrard et al. \cite{defferard} were the first to propose a way to deal with
+Deferrard et al. \cite{defferrard2016convolutional} were the first to propose a way to deal with
 the above issues.\\
 
 \spara{Localized Filter} First of all, they propose the use of a polynomial filter:\\
@@ -85,7 +85,7 @@ define this notion of neighborhood as in a Euclidean grid. Therefore, the author
 this paper propose a multilevel clustering approach, that not only clusters
 similar vertices - in a topological fashion- together, but also produces coarser
 versions of the graph at each level, closely mimicking the pooling operation of traditional
-CNNs. The multilevel clustering algorithm chosen is Graclus \cite{Kulis}.\\
+CNNs.\\
 In order to perform pooling in a fast and memory efficient manner, nodes are
 organized in a balanced binary tree. Specifically, after coarsening, each node
 has either two childer, if it was matched at the finer level, or one, if it was
@@ -99,7 +99,7 @@ balanced binary tree. Blue nodes are added fake nodes}
 \label{pooldef}
 \end{figure}
 \subsubsection*{$1^{st}$ order approximation and semi-supervised classification}
-Kipf and Welling \cite{kipf} build upon the previous work of Defferrard
+Kipf and Welling \cite{kipf2016semi} build upon the previous work of Defferrard
 presented above, introducing simplifications that allow for significantly faster training
 times and higher predictive accuracy. Also, in their framework, they introduce a
 way to perform semi-supervised classification tasks, so that their model has the
@@ -124,7 +124,7 @@ H^{(l+1)} =
 \end{equation}
 As most real-world networks (e.g. social networks, citation networks, knowledge
 graphs) have distributions close to power-law, the authors restrict
-the Chebyshev filters proposed by (\cite{mddef}) to $K=1$, expecting that this
+the Chebyshev filters proposed by \cite{defferrard2016convolutional} to $K=1$, expecting that this
 simplification will allow them to build deeper models and avoid any possible
 overfitting on local neighborhood structures. Setting, further, $\theta_0 =
 -\theta_1 = \theta$, leaves their model with only a single parameter to learn.
@@ -156,7 +156,7 @@ some \textbf{limitations}:
 \item The single-parameter model and the absence of pooling operations make this work not suitable for IVC
 tasks, like image segmentation, as in regular graphs. This results in sharing
 the same kernel (up to a multiplication factor) across all layers and all units
-in entire network (\cite{blogpost}) .
+in entire network (\cite{ference}) .
 \item The recursive expansion of neighborhoods across layers incurs expensive computations, as for power-law graphs, a single
 vertex can quickly fill up a large portion of the graph (\cite{fastgcn}).
 \end{enumerate}
@@ -190,7 +190,7 @@ aggregator functions are shared across those different networks. Hence, we can
 learn those parameters using stochastic gradient descend and back-propagation.
 For an unsupervised setting, we can define a graph-loss function to the output
 representations, while for completely supervised settings we can use different
-loss functions, like the cross-entropy.
+loss functions, like the cross-entropy.\\
 \spara{ Aggregator functions} The authors of this paper also propose a set of
 aggregator functions that can be used by this model. Among them is $mean$, which
 simply takes the average of the representations of neighboring nodes, and
@@ -198,4 +198,3 @@ $pooling$, where each neighbor's vector is independently fed through a
 fully-connected neural network. Following this transformation, an elementwise
 max-pooling operation is applied to aggregate information across the neighbor
 set.
-
