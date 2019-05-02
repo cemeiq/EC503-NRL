@@ -5,7 +5,7 @@ require quadratic space with respect to the number of the nodes, giving them an 
 about 10000 nodes. The largest dataset, com-Youtube proved too much for all implementations except
 deepwalk. We were unable to run the published code for LINE, depsite our best efforts.
 
-The following table~\ref{tab:results} shows the micro and macro precision, recall and F1 score for
+The following table~\ref{table:results} shows the micro and macro precision, recall and F1 score for
 classification in each dataset.
 
 \input{results.tex}
@@ -20,3 +20,42 @@ correspond to the the cuts between clusters of interacting proteins.
 As stated at the start of this report, no single algorithm can produce embeddings superior to all
 others for all algorithms. Even a single algorithm is usually highly customizable with many
 parameter choices whose optimums change depending on the input graph.
+
+
+
+Table \ref{table:1} is \dots
+\begin{table}[h!]
+\centering
+\caption{Prediction results for PPI dataset (micro-averaged F1 scores). \newline}
+\begin{tabular}{|p{3cm}||p{3cm}|p{3cm}|}
+ \hline
+ \multicolumn{3}{|c|}{\textbf{PPI}} \\
+ \hline
+ & Supervised F1 &Unsupervised F1\\
+ \hline\hline
+ DeepWalk   & ---    &0.39\\
+ max\_pool &   0.45131  & \textbf{0.47} \\
+ mean\_pool &\textbf{0.51893} & 0.45\\
+ GCN    &\textbf{0.45438} & 0.44\\
+ \hline
+\end{tabular}\\
+\label{table:1}
+\end{table}
+
+Table \ref{table:2} is \dots
+\begin{table}[h!]
+\centering
+\caption{}
+\begin{tabular}{ |p{2cm}||p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
+ \hline 
+ \multicolumn{6}{|c|}{\textbf{}} \\
+ \hline
+ &K=1& K=2 &K=3 &GCN & GraphSAGE\\
+ \hline\hline
+ Cora   & 0.7990    &0.84362 &0.793 &0.809 &\textbf{0.849}\\
+ citeseer &   0.702  & 0.692 &0.68 &\textbf{0.715}& --- \\
+ pubmed &0.71480 & 0.713 &0.74 &0.792 &\textbf{0.837}\\
+ \hline
+\end{tabular}\\
+\label{table:2}
+\end{table}
