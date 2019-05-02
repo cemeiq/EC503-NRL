@@ -15,119 +15,117 @@ by applying an approach that was introduced for learning word embeddings.
 
 DeepWalk is an algorithm that takes a graph as an input, and learns a latent
 representation of the nodes. This representation is a vector with continuous
-values. The goal is for this representation to capture the social similarity
-between the nodes and have a low dimension. In order to learn this
-representation, DeepWalk uses random walks and assumes that these walks can
-capture well the similarity between nodes. First it produces random walks by
-selecting a node $v_i$ uniformly at random, from the set of nodes $V$, as the
-root of the random walk $W_{v_i}$. Then, it samples one node from the set of the
-neighbor nodes of $v_i$ uniformly at random. The last step is now repeated for
-each new sampled node until the walk reaches a specific length. Having $\gamma$
-such random walks, DeepWalk adapts the word2vec approach for obtaining word
-embeddings, by treating the random walks as sentences, and the nodes as words.
+values that aims to capture the social similarity between the nodes while having 
+a low dimension. In order to learn this representation, DeepWalk uses random 
+walks and assumes that these walks can capture well the similarity between 
+nodes. First, it samples a node $v_i$ uniformly at random, from the set of nodes 
+$V$, as the root of the random walk $W_{v_i}$. Then, it repeatedly samples 
+a neighbor of the current node uniformly at random, until the walk reaches a 
+specific length. DeepWalk produces $\gamma$ such random 
+walks, and then adapts the word2vec approach, which is an approach for obtaining 
+word embeddings, by treating the random walks as sentences, and the nodes as 
+words.
 
-The \emph{word2vec} method, introduced in \cite{mikolov2013efficient}, is a
-method for embedding words of a corpus in a subspace $\mathbb{R}^d$ so that
-each embeddings of a specific word can be used to predict the context around this
-word, i.e. the words within a window $w$ in a sentence. Specifically, we
-want to calculate the probability of every word of the vocabulary being
-within a window from the current word (Skip-gram method).
-In order to do that, skip-gram parses the words of a given corpus and creates
-pairs of words $(w_i, w_j)$ that are within a window $w$, in order to specify
-that $w_i$ and $w_j$ are within this window, which means that the two words
-are in the same context. Therefore, this method assumes that words that are
-`close' inside a sentence, correspond to the same context. These pairs
-$(w_i, w_j)$ can be then used as a training set, to train a model to predict the
-`nearby' words based on the training set with high probability, i.e. maximizing
-the likelihood of the training set. The key idea is that the training of this
-model proposes an embedding for each word in the $\mathbb{R}^d$.
+The \emph{word2vec} method, introduced in \cite{mikolov2013efficient}, embeds 
+words of a corpus in a subspace $\mathbb{R}^d$, so that each word embedding can 
+be used to predict the context around this word, i.e. the `nearby' words (within 
+a window $w$) in a sentence. In particular, for every word in the vocabulary we 
+want to calculate its probability of being within a window $w$ from the current 
+word (Skip-gram method). 
+In order to do that, Skip-gram parses a given corpus and creates pairs of words 
+$(w_i, w_j)$ to specify that $w_j$ is within a window $w$ from the word $w_i$. 
+There is an underlying assumption that the words that are `close' in a 
+sentence, correspond to the same context. These pairs $(w_i, w_j)$ can then be 
+used as a training set, to train a model (for example a neural network) to 
+predict the `nearby' words with high probability from a given word, based on the 
+training set, i.e. to maximize the likelihood of the training set. These words 
+are internally represented in a subspace $R^d$. Therefore, the key idea is that 
+the training of this model yields an embedding for each word in $\mathbb{R}^d$.
 Using this embedding we can represent each word as a vector with dimension $d$
-which captures the context similarity instead of using an one-hot vector of
-dimension equal to the size of the vocabulary. The parameter $d$ is set by the
-user and it can be tuned using a validation set.
-% Explain homofilous
+which captures the context similarity based on a training set instead of using 
+an one-hot vector of dimension equal to the size of the vocabulary. The parameter 
+$d$ is set by the user and it can be tuned using a validation set.
 
-DeepWalk adapts the idea of word embeddings to graphs by treating the nodes as
-words and random walks as sentences. Similarly to the language model, the goal
-is to capture node similarity which can be then used for classifying them.
-There is no justification about why random walks can capture community
-similarity information in a social network graph. However, the authors
-%that random walks have been used for capturing
-%similarities in a variety of problems. They also
-observe that word frequency in some corpora, such as the English Wikipedia,
-follows a power-law distribution, which is also the case for the degree of nodes
-in social networks and that
-possibly makes the random walk suitable for capturing the neighborhood
-similarity and community membership in the social network graphs.
+DeepWalk adapts the idea of word embeddings to network graphs by treating the 
+nodes as words and the random walks as sentences. Similarly to the word 
+embeddings, the goal is for the embeddings to capture node similarity so that 
+they can then be used for classifying them. There is no rigorous justification 
+about why random walks can capture the information of community-similar nodes of 
+a social network graph. However, the authors observe that the word frequencies in 
+some corpora, such as the English Wikipedia, follows a power-law distribution, 
+which is also the case for the degree of nodes in social networks. That 
+observation possibly makes the random walks suitable for capturing the 
+neighborhood similarity or community membership in the social network graphs.
 
-DeepWalk initializes a mapping
-$\Phi: \mathbb{R}^{\mid V \mid \times S} \to \mathbb{R}^{\mid V\mid \times d}$
-where $S$ in the size of the features space. Then, using random walks DeepWalk
-solves the following optimization problem:
+DeepWalk first initializes a mapping 
+$\Phi: V \to \mathbb{R}^{\mid V\mid \times d}$ which maps each node to an 
+embedding of dimension $d$. Then, the objective is to solve the following 
+optimization problem:
 \begin{align}
     \min_{\Phi}
-        \left (-\log{Pr({v_{i-w},
+        \sum_{W_{u}: u \in V} \sum_{v_i \in W_{v_i}} \left (-\log{Pr({v_{i-w},
                 \ldots, v_{i-1}, v_{i+1},
                 \ldots , v_{i+w}} \mid \Phi(v_i))}
         \right )
 \end{align}
-where $v_i$ is the node currently examined in the random walk and
-$v_{i-w}, \ldots, \ldots, v_{i-1}, v_{i+1},\ldots, v_{i+w}$ are the nodes
-within a window $w$ from the node $v_i$ in this walk. The gradient of the above
-quantity with respect to $\Phi$ is
-computed in order to update the mapping $\Phi$. In the end, DeepWalk outputs
-the matrix $\Phi$.
+where $v_i$ is the node currently examined in the random walk $W_{v_i}$, 
+$\Phi(v_i)$ is the embedding of this node from which we want to predict the 
+nearby nodes and $v_{i-w}, \ldots, v_{i-1}, v_{i+1}, \ldots, v_{i+w}$ are the 
+nearby nodes (within a window $w$ from the node $v_i$) in this walk. 
+$\Phi$ is updated using gradient descent. In the end, DeepWalk outputs the 
+matrix $\Phi$, which corresponds to the final node embedding.
 
 \subsubsection{Node2vec}
 
 Similarly to DeepWalk, \emph{Node2vec} (\cite{grover2016node2vec}) is a method
 for learning latent representations of the nodes by using random walks and the
-skip-gram. However, this method uses a different way of sampling neighbor
-nodes during a random walk, in order to handle graphs that have more structural
-equivalent nodes different that the ones that include highly interconnected
-nodes.
+skip-gram. However, this method uses a different way of deciding the next node 
+to be sampled during a random walk. The reason is that there are graphs that 
+exhibit in order to handle graphs that have 
+structural equivalent nodes differently than the ones that include nodes 
+highly connected which exhibit community similarity.
 
 Node2vec introduces two baselines cases for sampling neighbor nodes: the
 Breadth-first Sampling (BFS) and the Depth-first Sampling (DFS).
 The Breadth-first strategy samples a neighborhood for a node $v_i$ by
 considering as neighbors, the nodes that have an immediate edge to $v_i$.
 In contrast, Depth-first strategy considers as neighbors the nodes that are
-one more edge away from $v_i$ each time a neighborhood needed should include
-more than one node. As an example, consider the node $u$ in
-Fig~\ref{sampling_strategies} (obtained by the original
-paper~\cite{grover2016node2vec}). Sampling a neighborhood of size 3 using the
-BFS strategy can give us the nodes $s_1, s_2, s_3$, while using the DFS strategy
-can give us the nodes $s_4, s_5, s_6$.
+one more edge away from $v_i$ each time we sample for one more node in the 
+neighborhood. As an example, consider the node $u$ in 
+Fig~\ref{sampling_strategies} (obtained by the original 
+paper~\cite{grover2016node2vec}). Sampling a neighborhood of size 3 using the 
+BFS strategy can give us the nodes $s_1, s_2, s_3$, while sampling using the DFS 
+strategy can give us the nodes $s_4, s_5, s_6$.
 \begin{figure}
 \begin{center}
 \includegraphics[width=0.7\textwidth]{figures/sampling.png}
 \end{center}
 \caption{Using the BFS sampling strategy, we can obtain the nodes
 $s_1, s_2, s_3$ as the 3 neighbors of $u$. Using the DFS sampling strategy we
-can obtain $\{s_4, s_5, s_6\}$. The figure is copied from the original
-paper~\cite{grover2016node2vec}.}
+can obtain $\{s_4, s_5, s_6\}$ as a neighborhood of size 3. The figure is copied 
+from the original paper~\cite{grover2016node2vec}.}
 \label{sampling_strategies}
 \end{figure}
-The BFS strategy can create random walks that capture the structural similarities
+The BFS strategy creates random walks that can capture the structural similarities
 between nodes. For example, consider a network graphs with nodes that correspond
 to hubs or bridges. In this case the embedding will reflect the structural
 equivalence of the nodes of the graph.
 On the contrary, the DFS strategy samples nodes in a way that explores
 neighborhoods of nodes that exhibit \emph{homophily}, which means that nodes
-highly connected belong to similar clusters/communities.
+highly connected belong to similar clusters or communities.
 
-Real-world graph networks can be thought of as a mixture of networks that
-include structural similar nodes and the ones networks that include nodes which
-exhibit homophily. The node2vec approach tries to capture these similarities each
-time based on the graph by introducing the parameters $p$, $q$. The return parameter $p$ controls the
-likelihood of visiting the node already visited before the current node, or in
-other words the likelihood of returning back to the node from which a node was
-sampled as a neighbor. The parameter $q$ controls the decision between a BFS and
-a DFS sampling strategy. If $q$ is less than 1 then the walk is more biased
-to choose nodes that are further from the current node in the walk, while if $q$
-is more than 1, then the walk would choose nodes that are close to the current
-node with higher probability. Formally, the walk samples using the transition
-probabilities $\pi_{ux}$ for going from a node $u$ to a node $x$:
+Real-world graph networks include both structural similar nodes and as well as 
+homophilous nodes that exhibit community similarities by being highy connected. 
+The node2vec approach can capture both similarities by introducing the parameters 
+$p$ and $q$. The return parameter $p$ controls the likelihood of returning back 
+to the previous node in the walk. The parameter $q$ controls the decision 
+between a BFS and a DFS sampling strategy. If $q$ is set to be less than 1 
+then the walk is more biased to choose nodes that are further from the current 
+node in the walk. If $q$ is chosen to be more than 1, then the walk would choose 
+nodes that are close to the current node with higher probability, following a 
+strategy closer to the BFS strategy. Formally, the algorithm uses the transition 
+probabilities $\pi$ to sample the next node in the walk. For example, the 
+transition probabilities for sampling the node $x$ when being in the node $u$ are:
 \begin{align}
 \pi_{ux} = \begin{cases} \frac{1}{p}\cdot w_{ux} & \text{ if } d_{tx} = 0 \\
 1\cdot w_{ux} & \text{ if } d_{tx} = 1 \\
