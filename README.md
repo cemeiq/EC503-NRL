@@ -13,4 +13,3 @@ Review of Network Representation Learning for BU EC 503.
 * [Convolutional neural networks on graphs with fast localized spectral filtering](http://papers.nips.cc/paper/6081-convolutional-neural-networks-on-graphs-with-fast-localized-spectral-filtering.pdf)
 * [Semi-supervised classification with graph convolutional networks](https://arxiv.org/pdf/1609.02907.pdf)
 * [Inductive representation learning on large graphs](https://papers.nips.cc/paper/6703-inductive-representation-learning-on-large-graphs.pdf)
-* [Large-Scale Learnable Graph Convolutional Networks](https://arxiv.org/abs/1710.06520) I MAY CHANGE IT!
