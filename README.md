@@ -1,6 +1,6 @@
 # EC503-NRL
-Review of Network Representation Learning for BU EC 503.
-Konstantinos Ameranis, Panagiota Kiourti, Konstantinos Sotiropoulos, Erasmo Tani, Isidora Tourni
+__Review of Network Representation Learning for BU EC 503.__ ** <br>
+_ _Konstantinos Ameranis, Panagiota Kiourti, Konstantinos Sotiropoulos, Erasmo Tani, Isidora Tourni_ _
 
 ## Key Papers
 * [DeepWalk: Online Learning of Social Representations](https://arxiv.org/abs/1403.6652)
